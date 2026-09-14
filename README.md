@@ -25,8 +25,8 @@ Codex Navigator is built from source on your Mac. There is no installer download
 ### Build and open
 
 ```sh
-git clone https://github.com/YOUR-USER/codex-navigator.git
-cd codex-navigator
+git clone https://github.com/danielhinkles/Codex-Navigator.git
+cd Codex-Navigator
 bash scripts/build.sh
 open 'dist/Codex Navigator.app'
 ```
