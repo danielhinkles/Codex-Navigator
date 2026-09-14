@@ -1,0 +1,133 @@
+{
+  "summary": "A useful workspace for finding and continuing your work. Make the next action easier to understand.",
+  "limitations": "Demo review for layout verification; this is not a live model assessment.",
+  "findings": [
+    {
+      "id": "f1",
+      "sentiment": "Love",
+      "title": "Local organisation you can trust",
+      "detail": "Grouping projects keeps the working folders untouched.",
+      "evidence": "Observed: demo fixture for interface verification.",
+      "rank": 1,
+      "impactPerEffort": 4
+    },
+    {
+      "id": "f2",
+      "sentiment": "Love",
+      "title": "Continue where you left off",
+      "detail": "Resume a session directly from Navigator.",
+      "evidence": "Observed: demo fixture for interface verification.",
+      "rank": 2,
+      "impactPerEffort": 4
+    },
+    {
+      "id": "f3",
+      "sentiment": "Like",
+      "title": "Visual memory through activity",
+      "detail": "Recognise a project by the day you spent working on it.",
+      "evidence": "Observed: demo fixture for interface verification.",
+      "rank": 3,
+      "impactPerEffort": 4
+    },
+    {
+      "id": "f4",
+      "sentiment": "Like",
+      "title": "Useful previews",
+      "detail": "Inspect assets before opening the original session.",
+      "evidence": "Observed: demo fixture for interface verification.",
+      "rank": 4,
+      "impactPerEffort": 4
+    },
+    {
+      "id": "f5",
+      "sentiment": "Like",
+      "title": "A familiar Mac interface",
+      "detail": "Native controls make navigation comfortable.",
+      "evidence": "Observed: demo fixture for interface verification.",
+      "rank": 5,
+      "impactPerEffort": 4
+    },
+    {
+      "id": "f6",
+      "sentiment": "Dislike",
+      "title": "Unclear next action",
+      "detail": "Several actions compete for attention.",
+      "evidence": "Observed: demo fixture for interface verification.",
+      "rank": 6,
+      "impactPerEffort": 4
+    },
+    {
+      "id": "f7",
+      "sentiment": "Hate",
+      "title": "Accidental prompt stacking",
+      "detail": "Combining presets can unexpectedly expand a task.",
+      "evidence": "Observed: demo fixture for interface verification.",
+      "rank": 7,
+      "impactPerEffort": 4
+    },
+    {
+      "id": "f8",
+      "sentiment": "Dislike",
+      "title": "Too much original context",
+      "detail": "The latest request should come before the first request.",
+      "evidence": "Observed: demo fixture for interface verification.",
+      "rank": 8,
+      "impactPerEffort": 4
+    },
+    {
+      "id": "f9",
+      "sentiment": "Dislike",
+      "title": "Dense review tables",
+      "detail": "Long findings need space for reading and feedback.",
+      "evidence": "Observed: demo fixture for interface verification.",
+      "rank": 9,
+      "impactPerEffort": 4
+    },
+    {
+      "id": "f10",
+      "sentiment": "Dislike",
+      "title": "Hidden workflow",
+      "detail": "Show which review is currently in progress.",
+      "evidence": "Observed: demo fixture for interface verification.",
+      "rank": 10,
+      "impactPerEffort": 4
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "r1",
+      "title": "Lead with recent context",
+      "action": "Show the latest request and response first.",
+      "benefit": "Resume work faster.",
+      "effort": "1\u20132 days"
+    },
+    {
+      "id": "r2",
+      "title": "Simplify actions",
+      "action": "Give Continue in Navigator primary emphasis.",
+      "benefit": "Choose confidently.",
+      "effort": "1\u20132 days"
+    },
+    {
+      "id": "r3",
+      "title": "Keep presets separate",
+      "action": "Preserve user context when switching prompts.",
+      "benefit": "Avoid accidental scope changes.",
+      "effort": "1\u20132 days"
+    },
+    {
+      "id": "r4",
+      "title": "Preserve the activity clue",
+      "action": "Keep the chart visible and make it collapsible.",
+      "benefit": "Recognise projects by recent work.",
+      "effort": "1\u20132 days"
+    },
+    {
+      "id": "r5",
+      "title": "Make reviews interactive",
+      "action": "Collect feedback before preparing selected work.",
+      "benefit": "Turn an assessment into a focused next pass.",
+      "effort": "1\u20132 days"
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+/* ==========================================================================
+   ACCESSIBLE.CSS - High-Contrast, Colorblind Symbols, Focus Rings & A11y
+   ========================================================================== */
+
+/* Engraved tactile symbol glyphs for colorblind readability */
+.symbol-glyph {
+  font-size: 1.1rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* The tokens are moulded art now, so the colourblind glyph would just read as
+   a dot stamped on the middle of them. It belongs to Symbols mode, which turns
+   it back on at full strength below. */
+.token-piece .symbol-glyph {
+  opacity: 0;
+}
+
+/* High-Contrast Mode Toggle Active State */
+body.high-contrast-mode {
+  --bg-primary: #000000;
+  --bg-secondary: #080a0f;
+  --bg-surface: #10141d;
+  --bg-surface-elevated: #182030;
+  --border-subtle: rgba(255, 255, 255, 0.4);
+  --border-focus: #ffffff;
+  --text-secondary: #cbd5e1;
+  --board-slot-empty: #000000;
+}
+
+/* Symbols mode leaves the tokens alone. The high contrast that matters is the
+   trim and text on the buttons and menus, which comes from the variables above;
+   flattening the moulded pieces only made the board worse. All this mode adds
+   on the board is the colourblind glyph. */
+
+body.high-contrast-mode .symbol-glyph {
+  opacity: 1 !important;
+  font-weight: 900;
+  transform: scale(1.35);
+}
+
+/* The board rests on plain white light so nothing competes with the tokens.
+   An armed special move still floods it, because that is information about what
+   is coming rather than decoration. */
+body.high-contrast-mode:not([data-surge]) {
+  --board-neon: #ffffff;
+  --board-neon-glow: rgba(255, 255, 255, 0.5);
+}
+
+/* Except when the Turn Light is on, which is also information.
+ *
+ * The white rule above and the turn-light rules in board.css carry the same
+ * weight — one element, one class or attribute, one more attribute — so the
+ * winner was decided by which file loaded last, and this one does. Enhanced
+ * Vision therefore switched the Turn Light off in everything but name: the
+ * setting still said ON and the board still went white.
+ *
+ * Naming the class and both attributes puts these above either, so the two
+ * settings stop fighting. The colours are each player's own, from
+ * `applyTokenColours` — a light that says whose turn it is has to be the
+ * colour that player is — and the `-hc` pair it sets is brighter and more
+ * saturated than the ordinary one, because a mode asked for by somebody who
+ * needs contrast should give them more of it, not the same amount.
+ */
+body.high-contrast-mode[data-turn-light="on"][data-turn="1"]:not([data-surge]) {
+  --board-neon: var(--p1-light-hc, #ff3b5c);
+  --board-neon-glow: var(--p1-light-glow-hc, rgba(255, 59, 92, 0.85));
+}
+
+body.high-contrast-mode[data-turn-light="on"][data-turn="2"]:not([data-surge]) {
+  --board-neon: var(--p2-light-hc, #ffd400);
+  --board-neon-glow: var(--p2-light-glow-hc, rgba(255, 212, 0, 0.85));
+}
+
+/* Accessible Focus States */
+button:focus-visible,
+[role="button"]:focus-visible,
+.board-cell:focus-visible {
+  outline: 3px solid #38bdf8 !important;
+  outline-offset: 3px !important;
+}
+
+/* Screen reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Every pressable thing gets a visible trim in enhanced vision mode. Several
+   of the buttons are otherwise only distinguishable by a soft fill, which
+   disappears entirely for anyone who needs more contrast. */
+body.high-contrast-mode button,
+body.high-contrast-mode [role="button"] {
+  border: 2px solid rgba(255, 255, 255, 0.85) !important;
+}
+
+/* The toggle itself says which state it is in, rather than looking identical
+   whichever way it is set. */
+#btn-accessibility-toggle.is-on {
+  background: rgba(255, 255, 255, 0.9);
+  color: #05070a;
+  border-color: #ffffff;
+}
+
+/* Text that only ever appeared as a dim hint is unreadable at high contrast. */
+body.high-contrast-mode .status-tip,
+body.high-contrast-mode .score-label,
+body.high-contrast-mode .surge-hint {
+  color: var(--text-primary);
+}

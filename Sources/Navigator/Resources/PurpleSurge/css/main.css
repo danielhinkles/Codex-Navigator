@@ -1,0 +1,3995 @@
+/* ==========================================================================
+   MAIN.CSS - Theme, Typography, Layout, HUD & Core UI Styles
+   ========================================================================== */
+
+:root {
+  /* Color Palette */
+  --bg-primary: #07090e;
+  --bg-secondary: #0f141f;
+  --bg-surface: rgba(18, 24, 38, 0.85);
+  --bg-surface-elevated: rgba(28, 38, 58, 0.9);
+  
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(255, 255, 255, 0.25);
+  
+  /* Brand Accents */
+  --accent-red: #ff3355;
+  --accent-red-glow: rgba(255, 51, 85, 0.6);
+  --accent-red-gradient: linear-gradient(135deg, #ff4d6d 0%, #d90429 100%);
+  
+  --accent-yellow: #ffc107;
+  --accent-yellow-glow: rgba(255, 193, 7, 0.6);
+  --accent-yellow-gradient: linear-gradient(135deg, #ffe066 0%, #f59e0b 100%);
+  
+  --accent-purple: #b5179e;
+  --accent-purple-bright: #d946ef;
+  --accent-purple-glow: rgba(217, 70, 239, 0.7);
+  --accent-purple-gradient: linear-gradient(135deg, #f72585 0%, #7209b7 100%);
+  
+  --accent-green: #10b981;
+  --accent-green-bright: #34d399;
+  --accent-green-glow: rgba(16, 185, 129, 0.7);
+  --accent-green-gradient: linear-gradient(135deg, #10b981 0%, #047857 100%);
+
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --board-black: #0d1117;
+  --board-bezel: #161b22;
+  --board-slot-empty: #05070a;
+  
+  /* Radii & Shadows */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-full: 9999px;
+  
+  --shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 30px rgba(181, 23, 158, 0.35);
+  --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.7), 0 0 0 1px var(--border-subtle);
+  
+  /* Fonts */
+  --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Space Grotesk', var(--font-main);
+}
+
+/* Reset & Box Sizing */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  font-size: 16px;
+  line-height: 1.5;
+  user-select: none;
+  /* Kills the ~300ms double-tap-to-zoom wait mobile browsers add before a tap
+     becomes a click. Every tap in the game is a single tap. */
+  touch-action: manipulation;
+}
+
+button,
+.board-cell,
+.drop-col-btn,
+.nav-btn {
+  touch-action: manipulation;
+}
+
+/* Dynamic Particle FX Canvas */
+#fx-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bg-gradient-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 15%, rgba(255, 51, 85, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 80% 85%, rgba(255, 193, 7, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(181, 23, 158, 0.06) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.vignette-overlay {
+  position: fixed;
+  inset: 0;
+  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* App Container */
+.app-container {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 24px 28px;
+}
+
+/* Header */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: var(--bg-surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-subtle);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* The mark brings its own purple trim; this only lifts it off the header. */
+.surge-mark {
+  display: block;
+  flex: none;
+  filter: drop-shadow(0 0 10px rgba(217, 70, 239, 0.35));
+}
+
+.brand-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.accent-text {
+  color: var(--accent-purple-bright);
+  text-shadow: 0 0 15px var(--accent-purple-glow);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--border-focus);
+  transform: translateY(-1px);
+}
+
+.icon-btn:active {
+  transform: translateY(0);
+}
+
+/* Screen Management */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.screen {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.screen.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   MENU SCREEN
+   ========================================================================== */
+
+.menu-hero {
+  max-width: 720px;
+  text-align: center;
+  margin: auto 0;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 6px 16px;
+  background: rgba(217, 70, 239, 0.15);
+  border: 1px solid rgba(217, 70, 239, 0.3);
+  color: var(--accent-purple-bright);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  border-radius: var(--radius-full);
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.hero-badge.green-mode {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: var(--accent-green-bright);
+}
+
+/* Mode Switcher Tabs */
+.mode-selector-tabs {
+  display: flex;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 6px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  gap: 8px;
+  margin-bottom: 24px;
+  width: 100%;
+  max-width: 520px;
+}
+
+.mode-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mode-tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.mode-tab.active {
+  background: var(--bg-surface-elevated);
+  border-color: rgba(217, 70, 239, 0.4);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.mode-tab[data-mode="green"].active {
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
+}
+
+.mode-tab-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.mode-tab-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.mode-tab-title {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.mode-tab-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.mode-tab.active .mode-tab-desc {
+  color: var(--text-secondary);
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 3.2rem;
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 16px;
+  letter-spacing: -0.5px;
+}
+
+.glow-text {
+  color: #fff;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+.purple-glow {
+  background: linear-gradient(135deg, #f72585, #b5179e, #7209b7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 25px rgba(217, 70, 239, 0.6));
+}
+
+.green-glow {
+  background: linear-gradient(135deg, #10b981, #34d399, #059669);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 25px rgba(16, 185, 129, 0.7));
+}
+
+.hero-desc {
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 36px;
+}
+
+.hero-desc strong {
+  color: #f72585;
+}
+
+.hero-desc.green-desc strong {
+  color: #10b981;
+}
+
+.menu-options-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  width: 100%;
+  max-width: 580px;
+  margin-bottom: 28px;
+}
+
+.menu-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
+  background: var(--bg-surface);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-card);
+}
+
+.menu-card:hover {
+  transform: translateY(-3px) scale(1.01);
+  border-color: rgba(217, 70, 239, 0.5);
+  box-shadow: 0 12px 30px rgba(181, 23, 158, 0.25), 0 0 0 1px rgba(217, 70, 239, 0.3);
+}
+
+.menu-card:active {
+  transform: translateY(0);
+}
+
+.menu-card.online-card {
+  border-color: rgba(52, 211, 153, 0.35);
+}
+
+.menu-card.online-card:hover {
+  border-color: rgba(52, 211, 153, 0.7);
+  box-shadow: 0 12px 30px rgba(5, 150, 105, 0.25), 0 0 0 1px rgba(52, 211, 153, 0.35);
+}
+
+.menu-card.online-card .arrow-indicator {
+  color: #34d399;
+}
+
+/* An online card with no connection behind it. Dimmed rather than hidden, so
+   the option is still visibly there for when the connection comes back. */
+.menu-card.online-card.needs-connection {
+  opacity: 0.55;
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.menu-card.online-card.needs-connection:hover {
+  transform: none;
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: var(--shadow-card);
+}
+
+.menu-card.online-card.needs-connection .arrow-indicator {
+  color: var(--text-secondary);
+}
+
+/* The daily is its own thing, so it gets its own colour rather than sharing
+   the online card's green or the CPU card's purple. */
+.menu-card.daily-card {
+  border-color: rgba(255, 209, 102, 0.35);
+}
+
+.menu-card.daily-card:hover {
+  border-color: rgba(255, 209, 102, 0.7);
+  box-shadow: 0 12px 30px rgba(191, 141, 20, 0.25), 0 0 0 1px rgba(255, 209, 102, 0.35);
+}
+
+.menu-card.daily-card .arrow-indicator {
+  color: #ffd166;
+}
+
+/* Install button: only ever shown once the browser says installing is possible. */
+.icon-btn#btn-install-app {
+  border-color: rgba(217, 70, 239, 0.55);
+  background: rgba(217, 70, 239, 0.14);
+}
+
+/* Header escape hatch back to wherever the player came from. */
+.icon-btn.back-btn {
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.icon-btn.back-btn .icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.card-icon {
+  font-size: 2.2rem;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-title {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  margin-bottom: 4px;
+}
+
+.card-subtitle {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.arrow-indicator {
+  font-size: 1.4rem;
+  color: var(--accent-purple-bright);
+  transition: transform 0.2s ease;
+}
+
+.menu-card:hover .arrow-indicator {
+  transform: translateX(6px);
+}
+
+/* AI Difficulty Picker */
+.difficulty-picker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+}
+
+.picker-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.segmented-control {
+  display: flex;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 3px;
+  border-radius: var(--radius-full);
+  gap: 4px;
+}
+
+.seg-btn {
+  padding: 6px 14px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.seg-btn.active {
+  background: var(--accent-purple-gradient);
+  color: #fff;
+  box-shadow: 0 0 12px var(--accent-purple-glow);
+}
+
+/* ==========================================================================
+   COIN TOSS SCREEN
+   ========================================================================== */
+
+.coin-toss-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  margin: auto 0;
+  text-align: center;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.section-desc {
+  color: var(--text-secondary);
+  font-size: 1.05rem;
+  margin-bottom: 36px;
+}
+
+.coin-stage {
+  perspective: 1000px;
+  width: 180px;
+  height: 180px;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+/* The glow the coin's own shadow used to give it, moved off the spinning faces
+   so that clipping them to an octagon does not take the depth with it. */
+.coin-stage::after {
+  content: '';
+  position: absolute;
+  inset: 6%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(217, 70, 239, 0.34), transparent 68%);
+  filter: blur(26px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.coin3d {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 3s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+/* The toss is for a token, not a coin, so it is the same octagon as everything
+   else on the board — with the pale trim the logo's token has.
+   The trim is a second octagon rather than a border: clip-path clips the border
+   box, so a real border survives only along the four flat sides and vanishes at
+   the diagonals. For the same reason the drop shadow has gone; a box-shadow on
+   a clipped element is clipped away with it, and a filter here would flatten
+   the 3D the flip depends on. */
+.coin-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  clip-path: var(--octagon);
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+
+.coin-face::before {
+  content: '';
+  position: absolute;
+  inset: 6.25%;
+  clip-path: var(--octagon);
+}
+
+/* The text has to sit above the face that is drawn behind it. */
+.coin-symbol {
+  position: relative;
+  z-index: 1;
+}
+
+.coin-front {
+  background: #ff758f;
+  color: #fff;
+}
+
+.coin-front::before {
+  background: var(--accent-red-gradient);
+}
+
+.coin-back {
+  background: #fff3bf;
+  color: #1a1a1a;
+  transform: rotateY(180deg);
+}
+
+.coin-back::before {
+  background: var(--accent-yellow-gradient);
+}
+
+.coin-result-message {
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  min-height: 40px;
+  margin-bottom: 24px;
+}
+
+/* Offered quietly, and only while the coin is actually spinning. It fades in
+   rather than appearing, so it does not compete with the coin for attention. */
+.coin-skip-hint {
+  animation: coin-skip-fade .5s ease both;
+  color: var(--muted, #8e7fa2);
+  font-size: .82rem;
+  letter-spacing: .08em;
+  margin: -12px 0 20px;
+  text-transform: uppercase;
+}
+
+@keyframes coin-skip-fade {
+  from { opacity: 0; }
+  to { opacity: .75; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .coin-skip-hint { animation: none; opacity: .75; }
+}
+
+/* Buttons */
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 32px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glow-btn {
+  background: var(--accent-purple-gradient);
+  color: #fff;
+  box-shadow: 0 6px 20px var(--accent-purple-glow);
+}
+
+.glow-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px var(--accent-purple-glow);
+}
+
+.glow-btn:active {
+  transform: translateY(0);
+}
+
+.secondary-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ==========================================================================
+   GAME HUD & SCOREBOARD
+   ========================================================================== */
+
+.game-hud {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.player-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--bg-surface);
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.player-card.active-turn {
+  border-color: #fff;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Whose turn it is, in that player's own colour. The board says the same thing
+   with its light; the two would contradict each other if this stayed red. */
+.player-card.p1.active-turn {
+  border-color: var(--p1-light, var(--accent-red));
+  box-shadow: 0 0 25px var(--p1-light-glow, var(--accent-red-glow));
+}
+
+.player-card.p2.active-turn {
+  border-color: var(--p2-light, var(--accent-yellow));
+  box-shadow: 0 0 25px var(--p2-light-glow, var(--accent-yellow-glow));
+}
+
+.player-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3);
+}
+
+/* The two seats on the scoreboard, in whatever colour their player picked.
+   The gradient stays as the fallback for a page that has not started a match
+   yet, and for anything an old cached stylesheet still paints. */
+.red-avatar {
+  background: var(--p1-avatar-fill, var(--accent-red-gradient));
+  box-shadow: 0 0 15px var(--p1-token-glow, var(--accent-red-glow));
+}
+
+.yellow-avatar {
+  background: var(--p2-avatar-fill, var(--accent-yellow-gradient));
+  box-shadow: 0 0 15px var(--p2-token-glow, var(--accent-yellow-glow));
+}
+
+/* When the seat is showing a coin rather than a colour — which is everywhere
+   except a Tower floor, where the boss shows their own face — the coin is the
+   avatar and the emoji underneath it gets out of the way. */
+.player-avatar.shows-coin {
+  background: none !important;
+  box-shadow: none;
+}
+
+/* The coin colour row in the options menu: a normal row, with the swatches
+   folding out underneath it rather than in a dialog of their own. */
+.option-colour-row {
+  display: flex;
+  flex-direction: column;
+}
+
+.option-colour-row #coin-colour-icon {
+  background: var(--coin-image) center / contain no-repeat;
+  filter: var(--coin-tint, none);
+  height: 22px;
+  width: 22px;
+}
+
+.coin-swatches {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(6, 1fr);
+  padding: 4px 12px 12px;
+}
+
+.coin-swatch {
+  aspect-ratio: 1;
+  background: var(--coin-image) center / contain no-repeat;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  filter: var(--coin-tint, none);
+  /* A 44px row of six will not fit a 320px phone, so the swatch itself is
+     small and the tap area around it is not. */
+  min-height: 34px;
+  outline-offset: 3px;
+  padding: 0;
+  position: relative;
+}
+
+.coin-swatch::after {
+  content: '';
+  inset: -6px;
+  position: absolute;
+}
+
+.coin-swatch[aria-pressed="true"] {
+  outline: 2px solid #ffffff;
+}
+
+.player-avatar.shows-coin .avatar-sym {
+  background: var(--coin-image) center / contain no-repeat;
+  filter: var(--coin-tint, none) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.6));
+  display: block;
+  height: 100%;
+  text-indent: -999em;
+  width: 100%;
+}
+
+.player-meta {
+  flex: 1;
+}
+
+.player-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.player-name {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.champ-crown {
+  font-size: 1rem;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.8));
+  animation: pulseCrown 1.5s infinite alternate ease-in-out;
+}
+
+@keyframes pulseCrown {
+  from { transform: scale(1); }
+  to { transform: scale(1.2); }
+}
+
+.player-score-box {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.player-clock {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  color: #fff;
+  display: inline-flex;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  justify-content: center;
+  margin-left: auto;
+  min-width: 58px;
+  padding: 3px 7px;
+  transition: all 0.2s ease;
+}
+
+.online-match .player-clock.clock-active {
+  border-color: #fff;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.22);
+}
+
+.online-match .player-clock.clock-low {
+  background: rgba(255, 51, 85, 0.18);
+  border-color: #ff4d6d;
+  color: #ff9aad;
+  animation: clockPulse 0.9s infinite alternate ease-in-out;
+}
+
+@keyframes clockPulse {
+  from { box-shadow: 0 0 8px rgba(255, 51, 85, 0.2); }
+  to { box-shadow: 0 0 18px rgba(255, 51, 85, 0.65); }
+}
+
+.score-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.score-value {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.purple-status-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(217, 70, 239, 0.15);
+  border: 1px solid rgba(217, 70, 239, 0.4);
+  border-radius: var(--radius-full);
+  transition: all 0.3s ease;
+}
+
+.purple-status-pill.green-mode {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+.purple-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-purple-bright);
+  box-shadow: 0 0 8px var(--accent-purple-glow);
+}
+
+.purple-dot.green-mode {
+  background: var(--accent-green-bright);
+  box-shadow: 0 0 8px var(--accent-green-glow);
+}
+
+.purple-status-text {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--accent-purple-bright);
+  letter-spacing: 0.5px;
+}
+
+.purple-status-text.green-mode {
+  color: var(--accent-green-bright);
+}
+
+.purple-status-pill.spent {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: transparent;
+  opacity: 0.4;
+}
+
+.purple-status-pill.spent .purple-dot {
+  background: var(--text-muted);
+  box-shadow: none;
+}
+
+.purple-status-pill.spent .purple-status-text {
+  color: var(--text-muted);
+}
+
+/* Center HUD & Purple Button */
+.hud-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.round-badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.turn-announcer {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.purple-surge-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 18px;
+  background: var(--accent-purple-gradient);
+  border: 2px solid #ff70a6;
+  border-radius: var(--radius-md);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 0 20px var(--accent-purple-glow);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  min-width: 170px;
+}
+
+.purple-surge-btn.green-mode {
+  background: var(--accent-green-gradient);
+  border-color: #6ee7b7;
+  box-shadow: 0 0 20px var(--accent-green-glow);
+}
+
+.purple-surge-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 30px var(--accent-purple-glow);
+}
+
+.purple-surge-btn.green-mode:hover {
+  box-shadow: 0 0 30px var(--accent-green-glow);
+}
+
+.purple-surge-btn.armed {
+  background: linear-gradient(135deg, #ff0055 0%, #d946ef 100%);
+  border-color: #fff;
+  animation: pulseArmed 1s infinite alternate ease-in-out;
+}
+
+.purple-surge-btn.green-mode.armed {
+  background: linear-gradient(135deg, #059669 0%, #34d399 100%);
+  border-color: #ffffff;
+  animation: pulseArmedGreen 1s infinite alternate ease-in-out;
+}
+
+@keyframes pulseArmed {
+  from { box-shadow: 0 0 20px rgba(255, 0, 85, 0.8); }
+  to { box-shadow: 0 0 45px rgba(217, 70, 239, 1); }
+}
+
+@keyframes pulseArmedGreen {
+  from { box-shadow: 0 0 20px rgba(16, 185, 129, 0.8); }
+  to { box-shadow: 0 0 45px rgba(52, 211, 153, 1); }
+}
+
+.purple-surge-btn.disabled,
+.purple-surge-btn:disabled {
+  opacity: 0.35;
+  filter: grayscale(1);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.surge-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.surge-text {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.surge-cost {
+  font-size: 0.65rem;
+  opacity: 0.85;
+  font-weight: 700;
+}
+
+/* Special Move Launcher — directly under the board */
+.surge-launch-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  /* Matches the move navigation bar below it so the controls under the board
+     read as one stack. */
+  max-width: 580px;
+  margin-top: 14px;
+}
+
+.surge-launch-bar .purple-surge-btn {
+  width: 100%;
+  flex-direction: row;
+  gap: 10px;
+  padding: 13px 20px;
+  border-radius: var(--radius-md);
+}
+
+.surge-launch-bar .surge-icon {
+  font-size: 1.35rem;
+}
+
+.surge-launch-bar .surge-text {
+  font-size: 1rem;
+  letter-spacing: 1px;
+}
+
+.surge-launch-bar .surge-cost {
+  margin-left: auto;
+  font-size: 0.68rem;
+  letter-spacing: 0.5px;
+  opacity: 0.8;
+}
+
+.surge-hint {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin: 0;
+}
+
+/* Bottom Game Controls */
+.game-bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* The row carries a different number of buttons in a puzzle than in a match,
+     and in a narrow column they must fall onto a second line rather than sit
+     on top of one another. */
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 700px;
+  margin-top: 18px;
+  gap: 12px;
+}
+
+.subtle-btn {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.subtle-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.subtle-btn.danger-btn {
+  border-color: rgba(255, 77, 109, 0.45);
+  color: #ff8fa3;
+}
+
+.subtle-btn.danger-btn:hover:not(:disabled) {
+  background: rgba(255, 51, 85, 0.18);
+  border-color: rgba(255, 77, 109, 0.8);
+  color: #fff;
+}
+
+.subtle-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Between rounds the Resign control becomes the way to carry on. */
+.subtle-btn.next-round-btn {
+  background: rgba(52, 211, 153, 0.16);
+  border-color: rgba(52, 211, 153, 0.55);
+  color: #6ee7b7;
+  font-weight: 700;
+}
+
+.subtle-btn.next-round-btn:hover:not(:disabled) {
+  background: rgba(52, 211, 153, 0.28);
+  color: #fff;
+}
+
+.status-tip {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: center;
+  flex: 1;
+}
+
+/* Modals */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+.modal-backdrop.active {
+  display: flex;
+}
+
+/* Lighter celebratory backdrop so board stays subtly visible & clickable to minimize */
+#modal-celebration {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  cursor: pointer;
+}
+
+#modal-celebration .modal-card {
+  cursor: default;
+}
+
+.modal-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  max-width: 520px;
+  width: 100%;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+  position: relative;
+  text-align: center;
+}
+
+.modal-close-corner-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 5;
+}
+
+.modal-close-corner-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  transform: scale(1.08);
+}
+
+.action-btn.inspect-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  font-size: 0.95rem;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.15);
+  animation: pulseInspect 1.8s infinite alternate ease-in-out;
+}
+
+.action-btn.inspect-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: #fff;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+@keyframes pulseInspect {
+  from { border-color: rgba(255, 255, 255, 0.3); }
+  to { border-color: rgba(255, 255, 255, 0.85); box-shadow: 0 0 20px rgba(255, 255, 255, 0.35); }
+}
+
+/* ==========================================================================
+   MOVE ANALYSIS & REPLAY NAVIGATION BAR (Lichess style)
+   ========================================================================== */
+
+.move-nav-bar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 580px;
+  padding: 8px 18px;
+  margin-top: 14px;
+  background: var(--bg-surface);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  transition: all 0.25s ease;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.move-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 36px;
+  min-width: 38px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.move-nav-btn .nav-icon {
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.move-nav-btn:hover:not(:disabled) {
+  background: rgba(217, 70, 239, 0.28);
+  border-color: rgba(217, 70, 239, 0.7);
+  color: #fff;
+  transform: translateY(-2px) scale(1.06);
+  box-shadow: 0 0 14px rgba(217, 70, 239, 0.4);
+}
+
+.move-nav-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.95);
+}
+
+.move-nav-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.05);
+  transform: none;
+  box-shadow: none;
+}
+
+.move-nav-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-width: 140px;
+  padding: 0 10px;
+  text-align: center;
+}
+
+.move-nav-badge {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #fff;
+}
+
+.move-nav-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.move-nav-keys-hint {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  padding-left: 12px;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  flex-shrink: 0;
+}
+
+.key-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 7px;
+  font-family: monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* Post-Match Victory Dock - Positioned cleanly below the board to avoid obstructing the grid */
+.victory-dock {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  margin-top: 14px;
+  background: var(--bg-surface-elevated);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(217, 70, 239, 0.25);
+  z-index: 30;
+  animation: slideUpDock 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.victory-dock.green-dock {
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(16, 185, 129, 0.35);
+}
+
+@keyframes slideUpDock {
+  from { transform: translateY(14px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.dock-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.dock-badge {
+  padding: 4px 10px;
+  background: var(--accent-purple-gradient);
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.victory-dock.green-dock .dock-badge {
+  background: var(--accent-green-gradient);
+}
+
+.dock-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1rem;
+  color: #fff;
+}
+
+.dock-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dock-btn {
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 700;
+  font-family: var(--font-display);
+  border: 1px solid var(--border-subtle);
+  transition: all 0.2s ease;
+}
+
+.dock-btn.glow-btn {
+  padding: 8px 18px;
+}
+
+.rules-card {
+  max-width: 600px;
+  text-align: left;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.close-btn:hover {
+  color: #fff;
+}
+
+.rules-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.rule-block {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.rule-block h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.rule-block p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.rule-block.highlight-block {
+  background: rgba(217, 70, 239, 0.08);
+  border-color: rgba(217, 70, 239, 0.35);
+}
+
+.rule-block.highlight-block-green {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.rule-block.highlight-block ul,
+.rule-block.highlight-block-green ul {
+  margin-top: 8px;
+  padding-left: 20px;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.rule-block.highlight-block li,
+.rule-block.highlight-block-green li {
+  margin-bottom: 4px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Celebration Modal Content */
+.victory-banner {
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.celebration-badge {
+  display: inline-block;
+  padding: 8px 24px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.celebration-badge.genius {
+  background: var(--accent-purple-gradient);
+  color: #fff;
+  box-shadow: 0 0 30px var(--accent-purple-glow);
+  animation: rubberBand 0.8s ease;
+}
+
+.celebration-badge.gravity-genius {
+  background: var(--accent-green-gradient);
+  color: #fff;
+  box-shadow: 0 0 30px var(--accent-green-glow);
+  animation: rubberBand 0.8s ease;
+}
+
+.celebration-badge.sarcastic {
+  background: linear-gradient(135deg, #475569 0%, #1e293b 100%);
+  color: #fca5a5;
+  border: 1px solid #f87171;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+  animation: headShake 0.8s ease;
+}
+
+.winner-title {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+.victory-subtext {
+  font-size: 1.1rem;
+  color: var(--accent-yellow);
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.modal-score-summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 16px 24px;
+  border-radius: var(--radius-md);
+  margin-bottom: 28px;
+}
+
+.summary-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sum-name {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.sum-score {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.sum-vs {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.4rem;
+  }
+  .game-hud {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
+  .hud-center {
+    grid-column: 1 / -1;
+    order: -1;
+    margin-bottom: 8px;
+  }
+  .player-card {
+    padding: 10px 14px;
+  }
+  .player-avatar {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* Keep the live arena fitted to the viewport instead of creating a nested scroll window. */
+html, body {
+  min-height: 100%;
+}
+
+body {
+  overflow-y: hidden;
+}
+
+.app-container {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  padding: 10px 20px 14px;
+}
+
+.app-header {
+  margin-bottom: 2px;
+  padding: 8px 16px;
+}
+
+/* The active player's card lifts and throws a 25px glow. The screen clips its
+   overflow to stay fitted, so it needs headroom inside that clip or the glow
+   is sliced off along the top. */
+#screen-game.active {
+  padding-top: 10px;
+}
+
+.main-content {
+  min-height: 0;
+  overflow: hidden;
+}
+
+#screen-game.active {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* The arena is pinned to the viewport on purpose — a nested scrollbar under a
+   live board is horrible. The list screens cannot live under that rule: the
+   ladder is fifteen floors, the menu is eight cards, the hub is a pack and
+   ten tiers, and the shell's clip does not scroll — so whatever sat past the
+   first screenful was simply unreachable. The menu lost Tower, Shop and
+   Play Online that way. These screens scroll themselves. */
+#screen-menu.active,
+#screen-puzzle.active,
+#screen-speedrun.active,
+#screen-shop.active,
+#screen-tower.active {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#screen-game .game-hud {
+  flex-shrink: 0;
+  margin-bottom: 8px;
+}
+
+#screen-game .board-arena {
+  flex: 1;
+  min-height: 0;
+}
+
+#screen-game .board-wrapper {
+  /* The art has a chunky chassis, so the playfield inside it is smaller than
+     the old CSS board at the same height. Give it back the difference. */
+  height: min(57dvh, 700px);
+  max-height: min(57dvh, 700px);
+  width: auto;
+  max-width: 100%;
+}
+
+#screen-game .surge-launch-bar {
+  flex-shrink: 0;
+  margin-top: 10px;
+}
+
+#screen-game .move-nav-bar {
+  flex-shrink: 0;
+  margin-top: 8px;
+}
+
+#screen-game .game-bottom-bar {
+  flex-shrink: 0;
+  margin-top: 8px;
+}
+
+@media (max-width: 768px) {
+  body {
+    overflow-y: auto;
+  }
+
+  .app-container {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  .main-content,
+  #screen-game.active,
+  #screen-menu.active,
+  #screen-puzzle.active,
+  #screen-speedrun.active,
+  #screen-shop.active,
+  #screen-tower.active {
+    /* On a phone the page itself scrolls, so the screens do not need to. */
+    overflow: visible;
+  }
+
+  #screen-game .board-wrapper {
+    height: auto;
+    max-height: none;
+    width: 100%;
+  }
+}
+
+/* Phone layout: keep the arena compact and in reading order. The previous
+   flex sizing left the board floating in a large empty vertical stage. */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 8px 10px 14px;
+  }
+
+  .app-header {
+    padding: 7px 10px;
+    margin-bottom: 8px;
+  }
+
+  .brand {
+    gap: 8px;
+  }
+
+  .brand-title {
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+  }
+
+  .header-controls {
+    gap: 4px;
+  }
+
+  .icon-btn {
+    gap: 3px;
+    padding: 6px 7px;
+    font-size: 0.68rem;
+  }
+
+  #screen-game.active {
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 0;
+  }
+
+  #screen-game .game-hud {
+    flex: 0 0 auto;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  #screen-game .hud-center {
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  #screen-game .turn-announcer {
+    font-size: 0.9rem;
+    line-height: 1.1;
+  }
+
+  #screen-game .surge-launch-bar {
+    max-width: 500px;
+    margin-top: 10px;
+    gap: 4px;
+  }
+
+  #screen-game .purple-surge-btn {
+    width: 100%;
+    min-width: 0;
+    padding: 11px 14px;
+  }
+
+  #screen-game .surge-text {
+    font-size: 0.82rem;
+    letter-spacing: 0.5px;
+  }
+
+  #screen-game .surge-cost {
+    font-size: 0.58rem;
+  }
+
+  #screen-game .surge-hint {
+    font-size: 0.62rem;
+  }
+
+  #screen-game .player-card {
+    min-width: 0;
+    gap: 7px;
+    padding: 7px 8px;
+  }
+
+  #screen-game .player-avatar {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 auto;
+    font-size: 1rem;
+  }
+
+  #screen-game .player-meta {
+    min-width: 0;
+  }
+
+  #screen-game .player-name {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.85rem;
+  }
+
+  #screen-game .score-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.6px;
+  }
+
+  #screen-game .score-value {
+    font-size: 1.05rem;
+  }
+
+  #screen-game .player-clock {
+    font-size: 0.82rem;
+    min-width: 48px;
+    padding: 2px 5px;
+  }
+
+  #screen-game .player-score-box {
+    gap: 4px;
+  }
+
+  #screen-game .purple-status-pill {
+    gap: 4px;
+    padding: 3px 6px;
+    flex: 0 0 auto;
+  }
+
+  #screen-game .purple-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  #screen-game .purple-status-text {
+    font-size: 0.55rem;
+    letter-spacing: 0;
+  }
+
+  #screen-game .board-arena {
+    flex: 0 0 auto;
+    justify-content: flex-start;
+    max-width: 500px;
+  }
+
+  #screen-game .move-nav-bar {
+    max-width: 500px;
+    gap: 4px;
+    margin-top: 8px;
+    padding: 6px 8px;
+  }
+
+  /* These were 32x30, which is a hard thing to hit with a thumb. The move
+     bar's middle section can shrink, so the buttons get the room. */
+  #screen-game .move-nav-btn {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    font-size: 0.85rem;
+  }
+
+  #screen-game .move-nav-info {
+    min-width: 0;
+    padding: 0 4px;
+  }
+
+  #screen-game .move-nav-badge {
+    font-size: 0.78rem;
+  }
+
+  #screen-game .move-nav-label {
+    max-width: 150px;
+    font-size: 0.62rem;
+  }
+
+  #screen-game .move-nav-keys-hint {
+    display: none;
+  }
+
+  #screen-game .game-bottom-bar {
+    max-width: 500px;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+
+  #screen-game .status-tip {
+    order: 3;
+    flex-basis: 100%;
+  }
+
+  #screen-game .subtle-btn {
+    padding: 6px 8px;
+    font-size: 0.68rem;
+  }
+
+  #screen-game .status-tip {
+    font-size: 0.68rem;
+    line-height: 1.2;
+  }
+}
+
+@media (max-width: 430px) {
+  .header-controls .btn-label {
+    display: none;
+  }
+
+  /* Seven icon buttons plus the wordmark do not fit a phone. The buttons keep
+     their size, because they are what you actually press; the wordmark drops
+     to its four dots, which still read as the logo. */
+  .icon-btn {
+    padding: 8px 9px;
+  }
+
+  .header-controls {
+    gap: 4px;
+    flex: 0 0 auto;
+  }
+
+  .brand {
+    min-width: 0;
+    flex: 0 0 auto;
+  }
+
+  .brand-title {
+    display: none;
+  }
+
+  #screen-game .purple-status-text {
+    display: none;
+  }
+
+  #screen-game .purple-status-pill {
+    padding: 5px;
+  }
+
+  #screen-game .player-card {
+    gap: 5px;
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+}
+
+/* ==========================================================================
+   ONLINE REVIEW — the move-nav "last" control doubles as a live button while
+   an online match is in progress, so one press always returns to the position
+   being played right now.
+   ========================================================================== */
+
+.online-match .move-nav-btn.is-live-jump:not(:disabled) {
+  background: rgba(16, 185, 129, 0.18);
+  border-color: rgba(52, 211, 153, 0.55);
+  color: #34d399;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 0 8px;
+  width: auto;
+  min-width: 62px;
+}
+
+.online-match .move-nav-btn.is-live-jump.has-pending:not(:disabled) {
+  animation: liveNudge 1s infinite alternate ease-in-out;
+  background: rgba(217, 70, 239, 0.22);
+  border-color: rgba(217, 70, 239, 0.75);
+  color: #f0abfc;
+}
+
+@keyframes liveNudge {
+  from { box-shadow: 0 0 8px rgba(217, 70, 239, 0.25); }
+  to { box-shadow: 0 0 20px rgba(217, 70, 239, 0.8); }
+}
+
+/* Reviewing an earlier position: make the board read as "not the live one"
+   without hiding it, and take the drop targets out of play. */
+.online-match.is-reviewing .board-wrapper {
+  box-shadow:
+    0 25px 50px -10px rgba(0, 0, 0, 0.9),
+    0 0 0 4px #a78bfa,
+    0 0 40px rgba(167, 139, 250, 0.35),
+    inset 0 3px 6px rgba(255, 255, 255, 0.9),
+    inset 0 -6px 12px rgba(14, 116, 144, 0.4);
+}
+
+.online-match.is-reviewing .drop-selector-bar {
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+.online-match.is-reviewing .move-nav-bar {
+  border-color: rgba(167, 139, 250, 0.5);
+}
+
+/* ==========================================================================
+   REACHABILITY — nothing may end up off screen
+   --------------------------------------------------------------------------
+   A phone with the system text size turned up renders every label far larger
+   than the layout was drawn for. That pushed real controls out of reach: the
+   Rules button off the right of the header, Quit / Resign / the move history
+   below the fold, NEXT MATCH shoved out of the victory dock, and the buttons
+   in the celebration modal unreachable — which left players unable to quit a
+   match at all.
+
+   The rules below never shrink text to make things fit. They let the page grow
+   and scroll, and let rows wrap, so a bigger typeface costs scrolling rather
+   than access.
+   ========================================================================== */
+
+/* The arena pins itself to the viewport so the board never sits in a nested
+   scroll window. On a phone that same pinning made `body` its own scroll box
+   exactly one viewport tall, so anything past it could not be scrolled to at
+   all. Below 768px the document scrolls normally instead. */
+@media (max-width: 768px) {
+  html,
+  body {
+    height: auto;
+    min-height: 100%;
+    overflow-y: visible;
+  }
+
+  .app-container {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+}
+
+/* A modal taller than the viewport was centred, so it was clipped at BOTH
+   ends: the badge disappeared off the top and the action buttons off the
+   bottom, with no way to scroll to either. `margin: auto` on the card still
+   centres it when there is room, and gives way to scrolling when there is not. */
+.modal-backdrop {
+  overflow-y: auto;
+  align-items: flex-start;
+  justify-content: center;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-card {
+  margin: auto;
+}
+
+/* Long result text ("CPU Wins! (+1 Pt)") used to push NEXT MATCH out of the
+   dock. The summary may now shrink and the actions wrap under it instead. */
+.victory-dock {
+  flex-wrap: wrap;
+}
+
+.dock-summary {
+  min-width: 0;
+  flex: 1 1 12rem;
+}
+
+.dock-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.dock-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex: 1 1 auto;
+}
+
+.dock-btn {
+  min-width: 0;
+}
+
+/* The header ran the brand and every icon button along one line, so the Rules
+   button fell off the right edge and `overflow-x: hidden` clipped it away.
+   Wrapping drops it onto a second line where it can still be pressed. */
+.app-header {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.header-controls {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+/* The action row under a celebration is the way out of a match. Let it wrap
+   rather than run past the card. */
+.modal-actions {
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  min-width: 0;
+}
+
+.action-btn span {
+  overflow-wrap: anywhere;
+}
+
+/* Each player card carries a "PURPLE READY" pill beside the clock. On a phone
+   it crowds the clock for information the big ARM PURPLE SURGE bar already
+   gives at a glance, so the pill stands down where space is tight. */
+@media (max-width: 768px) {
+  .player-card .special-status-pill {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   ONLINE — whose turn is it
+   --------------------------------------------------------------------------
+   Two guests are called things like "Guest 4F21" and "Guest 90BC". Neither
+   player knows which one they are, so a highlighted card and a name told them
+   nothing. Online speaks in the second person instead, and the state is loud
+   enough to read without looking for it.
+   ========================================================================== */
+
+.online-match .turn-announcer {
+  border-radius: var(--radius-full);
+  padding: 6px 16px;
+  border: 2px solid transparent;
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+.online-match.your-turn .turn-announcer {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.35), rgba(4, 120, 87, 0.35));
+  border-color: var(--accent-green-bright);
+  color: #fff;
+  animation: yourTurnPulse 2s ease-in-out infinite;
+}
+
+.online-match.their-turn .turn-announcer {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+@keyframes yourTurnPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.45); }
+  50% { box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); }
+}
+
+/* Your own card wears a YOU tag, so the two names are never a guessing game. */
+.online-match .player-card.is-you {
+  border-color: var(--accent-green-bright);
+}
+
+.online-match .player-card.is-you .player-name-row::after {
+  content: 'YOU';
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: var(--accent-green-bright);
+  color: #05070a;
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+/* The board itself answers the question, so a glance at where you are already
+   looking is enough. */
+.online-match.your-turn .board-wrapper {
+  filter: drop-shadow(0 0 14px rgba(52, 211, 153, 0.55));
+}
+
+.online-match.their-turn .board-wrapper {
+  filter: none;
+  opacity: 0.82;
+}
+
+/* Waiting on the opponent, the drop targets should not look pressable. */
+.online-match.their-turn .drop-selector-bar {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* The confirm dialog matches the rest of the game rather than the browser. */
+.confirm-card {
+  max-width: 460px;
+}
+
+/* A question, not a victory headline — the celebration type scale makes this
+   dialog three screens tall once the system text size is turned up. */
+.confirm-card .winner-title {
+  font-size: 1.25rem;
+  line-height: 1.25;
+  margin-bottom: 10px;
+}
+
+.confirm-card .celebration-badge {
+  font-size: 0.7rem;
+}
+
+.confirm-card .victory-subtext {
+  font-size: 0.95rem;
+}
+
+.confirm-card .modal-actions {
+  margin-top: 22px;
+}
+
+/* --------------------------------------------------------------------------
+   The scoreboard row, at any text size
+   The HUD was a rigid three-column grid. Grid items refuse to shrink below
+   their content by default, so once the system text size grew the two player
+   cards simply overflowed the screen and took the clocks with them. Flex with
+   wrapping lets each card claim a whole row when it can no longer share one.
+   -------------------------------------------------------------------------- */
+.game-hud {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* On a wide screen the announcer keeps its old place between the two cards.
+   It only takes a row of its own once the cards can no longer share one. */
+.hud-center {
+  flex: 0 1 auto;
+  order: 0;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .hud-center {
+    flex: 1 1 100%;
+    order: -1;
+  }
+}
+
+.player-card {
+  flex: 1 1 15rem;
+  min-width: 0;
+}
+
+.player-meta {
+  min-width: 0;
+}
+
+.player-score-box {
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+/* A clock pushed to the right edge of a card that clips its overflow was the
+   part that actually disappeared. */
+.player-card {
+  overflow: visible;
+}
+
+.player-clock {
+  flex-shrink: 0;
+}
+
+/* "Guest 4F21" truncated to "Gue…" tells the player nothing. Names now wrap
+   onto a second line instead of being cut off. */
+@media (max-width: 768px) {
+  #screen-game .player-name {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+  }
+
+  .player-name-row {
+    flex-wrap: wrap;
+  }
+}
+
+/* ==========================================================================
+   COMPACT GAME CHROME
+   The scoreboard is always one horizontal row, the turn state sits where the
+   next move happens, and secondary preferences live behind one menu button.
+   ========================================================================== */
+
+.app-header {
+  position: relative;
+  z-index: 80;
+  flex-wrap: nowrap;
+}
+
+.header-controls {
+  flex-wrap: nowrap;
+  flex: 0 0 auto;
+}
+
+.options-popover {
+  position: relative;
+}
+
+.options-menu-btn {
+  min-height: 40px;
+}
+
+.options-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 90;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  width: min(290px, calc(100vw - 28px));
+  padding: 10px;
+  background: rgba(12, 16, 26, 0.98);
+  border: 1px solid rgba(217, 70, 239, 0.35);
+  border-radius: var(--radius-md);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 28px rgba(181, 23, 158, 0.18);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.options-menu::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  right: 24px;
+  width: 11px;
+  height: 11px;
+  background: rgba(12, 16, 26, 0.98);
+  border-top: 1px solid rgba(217, 70, 239, 0.35);
+  border-left: 1px solid rgba(217, 70, 239, 0.35);
+  transform: rotate(45deg);
+}
+
+.option-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.option-menu-item:hover,
+.option-menu-item:focus-visible {
+  background: rgba(255, 255, 255, 0.11);
+  border-color: rgba(217, 70, 239, 0.45);
+  outline: none;
+  transform: translateX(-2px);
+}
+
+.option-menu-item .icon {
+  width: 28px;
+  font-size: 1.15rem;
+  text-align: center;
+}
+
+.option-copy {
+  display: flex;
+  flex: 1;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.option-copy strong {
+  font-size: 0.9rem;
+}
+
+.option-copy small {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.option-menu-item[aria-pressed="true"] {
+  border-color: rgba(52, 211, 153, 0.55);
+  background: rgba(16, 185, 129, 0.13);
+}
+
+/* The player cards are the scoreboard. They never stack, including on a
+   320px phone, so the board can begin much higher up the screen. */
+#screen-game .game-hud {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto 7px;
+}
+
+#screen-game .player-card {
+  flex: none;
+  min-width: 0;
+  padding: 10px 12px;
+  gap: 10px;
+}
+
+#screen-game .player-card.active-turn {
+  transform: none;
+}
+
+.turn-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 700px;
+  min-height: 42px;
+  margin: 0 auto 5px;
+  padding: 7px 14px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: rgba(18, 24, 38, 0.82);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.turn-status-bar .round-badge {
+  flex: 0 0 auto;
+  padding-right: 12px;
+  border-right: 1px solid var(--border-subtle);
+  line-height: 1.4;
+}
+
+.online-match .turn-status-bar {
+  border-radius: var(--radius-md);
+  padding: 7px 14px;
+}
+
+.online-match.your-turn .turn-status-bar {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.35), rgba(4, 120, 87, 0.35));
+  border-color: var(--accent-green-bright);
+  color: #fff;
+  animation: yourTurnPulse 2s ease-in-out infinite;
+}
+
+.online-match.their-turn .turn-status-bar {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+/* Quit and Resign are consequential touch controls, not footer links. */
+#screen-game .game-exit-btn {
+  min-height: 48px;
+  padding: 12px 20px;
+  border-width: 2px;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    padding: 7px 10px;
+    margin-bottom: 4px;
+  }
+
+  .brand-title {
+    display: block;
+  }
+
+  .options-menu-btn {
+    min-height: 42px;
+    padding: 8px 12px;
+    font-size: 0.78rem;
+  }
+
+  #screen-game.active {
+    padding-top: 3px;
+  }
+
+  #screen-game .game-hud {
+    gap: 6px;
+    margin-bottom: 5px;
+  }
+
+  #screen-game .player-card {
+    padding: 7px 8px;
+    gap: 6px;
+  }
+
+  #screen-game .player-avatar {
+    width: 30px;
+    height: 30px;
+  }
+
+  #screen-game .player-name {
+    font-size: clamp(0.72rem, 3.2vw, 0.86rem);
+    line-height: 1.05;
+  }
+
+  #screen-game .player-name-row {
+    margin-bottom: 3px;
+  }
+
+  #screen-game .score-label {
+    display: none;
+  }
+
+  #screen-game .score-value::before {
+    content: 'PTS ';
+    color: var(--text-muted);
+    font-family: var(--font-main);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  #screen-game .player-clock {
+    min-width: 44px;
+    margin-left: 0;
+    font-size: 0.76rem;
+  }
+
+  .turn-status-bar {
+    min-height: 38px;
+    gap: 8px;
+    margin-bottom: 3px;
+    padding: 6px 10px;
+    font-size: 0.84rem;
+  }
+
+  .turn-status-bar .round-badge {
+    padding-right: 8px;
+    font-size: 0.62rem;
+    letter-spacing: 1px;
+  }
+
+  #screen-game .game-bottom-bar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+  }
+
+  #screen-game .game-exit-btn {
+    width: 100%;
+    min-height: 50px;
+    padding: 12px 10px;
+    font-size: 0.82rem;
+  }
+
+  #screen-game .status-tip {
+    grid-column: 1 / -1;
+    order: 3;
+  }
+}
+
+@media (max-width: 360px) {
+  .brand-title {
+    display: block;
+    font-size: 0.9rem;
+  }
+
+  #screen-game .player-avatar {
+    width: 27px;
+    height: 27px;
+    font-size: 0.9rem;
+  }
+
+  #screen-game .player-card {
+    padding: 6px;
+    gap: 4px;
+  }
+}
+
+/* ==========================================================================
+   TOUCH TARGETS
+   Several controls were 28-38 pixels tall, which is a hard thing to hit with
+   a thumb and below the 44 pixel minimum. They grow to 44 rather than being
+   padded out sideways, so the compact phone layout keeps its widths.
+   ========================================================================== */
+
+.icon-btn,
+.seg-btn,
+.move-nav-btn,
+.close-btn,
+.modal-close-corner-btn,
+.option-menu-item {
+  min-height: 44px;
+}
+
+/* The square ones need the width too. The move bar's 10px gaps and the
+   header's own spacing leave room for it without the targets running into
+   each other. On a wide screen these buttons carry a label and are already
+   wider than this, so nothing moves there. */
+.move-nav-btn,
+.close-btn,
+.modal-close-corner-btn,
+.icon-btn {
+  min-width: 44px;
+}
+
+/* ==========================================================================
+   SHORT PHONES
+   On a 375x667 screen — an iPhone SE, and anything else with a short
+   viewport — the game screen came to 723px and the page scrolled. The board,
+   the player cards and the surge button all fit; what did not was the chrome
+   below them, and 723 - 667 is 56px.
+
+   Nothing here shrinks a touch target. The section above sets a 44px floor on
+   purpose, and thumbs do not get smaller because the phone did. What gives way
+   instead is the move review bar: it is the only control on this screen that
+   is not needed to take a turn, and losing it costs 66px, which is the whole
+   overflow and a little to spare.
+
+   It comes straight back while a match is being reviewed, which is the one
+   time it is the point of the screen rather than an aside.
+   ========================================================================== */
+@media (max-width: 768px) and (max-height: 720px) {
+  #screen-game .move-nav-bar {
+    display: none;
+  }
+
+  body.online-match.is-reviewing #screen-game .move-nav-bar {
+    display: flex;
+  }
+
+  /* The last few pixels, taken from gaps rather than from anything you touch. */
+  #screen-game.active {
+    padding-top: 4px;
+  }
+
+  #screen-game .surge-launch-bar {
+    margin-top: 6px;
+  }
+
+  #screen-game .game-bottom-bar {
+    margin-top: 6px;
+  }
+}
+
+/* The oldest phones still in use — a 320x568 iPhone SE of the first kind — are
+   37px short even after the review bar has gone. There is nothing left to take
+   from the chrome without going under 44px, so the board gives up the
+   difference instead. It is still the largest thing on the screen. */
+@media (max-width: 768px) and (max-height: 600px) {
+  #screen-game .board-wrapper {
+    /* An explicit height, not a cap on an automatic one: the playfield inside
+       is absolutely positioned, so with `height: auto` the wrapper has nothing
+       to measure and collapses to zero, taking the board with it. Given a
+       height, aspect-ratio works the width back out. */
+    height: 38dvh;
+    max-height: 38dvh;
+    width: auto;
+    max-width: 100%;
+  }
+
+  #screen-game .game-hud {
+    margin-bottom: 4px;
+  }
+}
+/* ==========================================================================
+   A PHONE ON ITS SIDE
+
+   Turning the phone used to lose the board completely — not shrink it, remove
+   it. The rule that stops the wrapper collapsing lived behind
+   `max-width: 768px`, and a phone in landscape is wider than that, so the one
+   thing holding the board open did not apply. Underneath, the cause is the one
+   the short-phone rule already names: the playfield inside the wrapper is
+   absolutely positioned, so a wrapper with nothing to measure and no room to
+   grow into shrinks to zero and takes the board with it.
+
+   Landscape is also the one orientation where the board can be bigger than it
+   is in portrait. Standing up, the board is as wide as the phone and there is
+   nothing to win — it is already 355 of 375 pixels, and the spare space is all
+   below it, where a board that is limited by its width cannot use it. On its
+   side, the scoreboard and the controls move out of the way into a column of
+   their own and the board takes the whole height, which is the only direction
+   that was ever free.
+   ========================================================================== */
+@media (orientation: landscape) and (max-height: 560px) {
+  /* The header is the difference between a landscape board that is bigger
+     than the portrait one and a landscape board that is smaller. Standing up
+     it costs 88 pixels of a 812-pixel screen and nobody notices; on its side
+     it is 88 of 375, and the board is measured from what is left. So it keeps
+     its controls and gives up its wordmark and its padding. */
+  /* The header stops taking a row and starts floating in the margin beside
+     the board.
+     
+     Sixty-odd pixels of a 375-pixel screen is the whole difference between a
+     landscape board that beats the portrait one and a landscape board that is
+     smaller than it — the board is limited by height here, so every pixel the
+     chrome takes comes straight off the coins. The board is centred in its
+     column and does not use the width at its edges, so the two controls go
+     there: out of the layout, over nothing, still a thumb's width. */
+  .app-header {
+    background: none;
+    border: 0;
+    box-shadow: none;
+    left: 4px;
+    min-height: 0;
+    padding: 0;
+    position: fixed;
+    top: 6px;
+    width: auto;
+    z-index: 30;
+  }
+
+  .app-header .brand,
+  .app-header .btn-label,
+  .app-header #btn-install-app {
+    display: none;
+  }
+
+  .app-header .header-controls {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .app-header .icon-btn {
+    backdrop-filter: blur(6px);
+    background: rgba(9, 7, 15, 0.72);
+  }
+
+  #screen-game.active {
+    align-content: stretch;
+    display: grid;
+    /* The board takes what it can; the controls take a readable strip and no
+       more. `minmax(0, 1fr)` rather than `1fr`, or the board's own contents
+       set a floor and push the column wider than the screen. */
+    grid-template-columns: minmax(0, 1fr) clamp(168px, 30%, 260px);
+    /* Four named rows, one per control, rather than letting the board's span
+       invent them. Spanning twenty rows made twenty rows exist, each a
+       twentieth of the board's height, and the controls piled on top of one
+       another inside them. With the rows declared, the board can honestly
+       span all of them and each control gets its own. */
+    /* Every control takes the height it needs and the slack goes to the last
+       row. Giving the slack to the surge bar instead squeezed it below its own
+       content, which then spilled over the buttons underneath. */
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+    column-gap: 10px;
+    row-gap: 6px;
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+    padding: 6px 8px calc(env(safe-area-inset-bottom) + 6px);
+  }
+
+  /* The board owns the left column, all of it, however many rows the controls
+     turn out to need. */
+  #screen-game .board-arena {
+    align-self: center;
+    grid-column: 1;
+    grid-row: 1 / -1;
+    /* Not `height: 100%`: the rows in the other column can add up to more than
+       the screen, and a board measured against them grows past the bottom of
+       it. The viewport is the only honest thing to measure against here. */
+    height: auto;
+    max-width: none;
+    min-height: 0;
+    width: 100%;
+  }
+
+  #screen-game .board-wrapper {
+    /* An explicit height for the same reason as the short-phone rule: with
+       `height: auto` there is nothing to measure. Given one, aspect-ratio
+       works the width back out and the board is as big as the height allows. */
+    height: calc(100dvh - 16px);
+    max-height: calc(100dvh - 16px);
+    margin: 0 auto;
+    max-width: 100%;
+    width: auto;
+  }
+
+  /* Everything that is not the board stacks down the right-hand column, each
+     in the row it was given. */
+  #screen-game > *:not(.board-arena) {
+    grid-column: 2;
+  }
+
+  #screen-game .game-hud { grid-row: 1; }
+  #screen-game .turn-status-bar { grid-row: 2; }
+  #screen-game .surge-launch-bar { grid-row: 3; }
+  #screen-game .game-bottom-bar { grid-row: 4; }
+
+  /* The two seats go one above the other — side by side in a 200px column
+     leaves no room for a name. */
+  #screen-game .game-hud {
+    align-content: start;
+    display: grid;
+    gap: 6px;
+    grid-template-columns: 1fr;
+  }
+
+  #screen-game .player-card {
+    gap: 8px;
+    padding: 5px 8px;
+  }
+
+  #screen-game .player-avatar {
+    height: 26px;
+    width: 26px;
+  }
+
+  /* "POINTS" beside a number in a 227px column is a word doing the work of a
+     layout. The number stays. */
+  #screen-game .score-label {
+    display: none;
+  }
+
+  #screen-game .player-name {
+    font-size: 0.8rem;
+  }
+
+  /* Instructions belong on a screen with room for them. Everything they
+     explain is still on this one, and larger. */
+  #screen-game .surge-launch-bar .surge-hint,
+  #screen-game .surge-hint,
+  #screen-game .board-hint,
+  #screen-game .game-bottom-bar .board-hint {
+    display: none;
+  }
+
+  #screen-game .surge-launch-bar,
+  #screen-game .game-bottom-bar,
+  #screen-game .game-hud {
+    overflow: hidden;
+  }
+
+  #screen-game .purple-surge-btn {
+    font-size: 0.8rem;
+    min-height: 46px;
+    padding: 0 10px;
+  }
+
+  #screen-game .game-bottom-bar {
+    align-content: start;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  /* The status tip is the game talking — which coin you just picked, whose
+     the flip coin is now, which boss you are on — so it stays. What it cannot
+     do is wrap to eleven lines in a 227px column and push the buttons off the
+     bottom of the screen, which is what it was doing. Two lines, then it
+     stops. */
+  #screen-game .status-tip {
+    /* Last, not third. In the markup the tip sits between the two buttons, so
+       a full-width tip in a wrapping row put Main Menu above it and Restart
+       below — three rows where there was room for two, and Restart fell off
+       the bottom of the screen. */
+    order: 2;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    flex: 1 1 100%;
+    font-size: 0.66rem;
+    line-height: 1.3;
+    max-height: 2.6em;
+    min-width: 0;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  #screen-game .game-bottom-bar .subtle-btn {
+    order: 1;
+    flex: 1 1 0;
+    font-size: 0.75rem;
+    min-height: 40px;
+    padding: 0 6px;
+  }
+
+  #screen-game .turn-status-bar {
+    flex-wrap: wrap;
+    font-size: 0.72rem;
+    padding: 6px 8px;
+    row-gap: 2px;
+  }
+
+  #screen-game .surge-launch-bar {
+    margin: 0;
+  }
+
+  /* The one control that is not needed to take a turn, on the one screen with
+     the least room for it — the same trade the short-phone rule makes, and it
+     comes back the same way while a match is being reviewed. */
+  #screen-game .move-nav-bar,
+  #screen-game .board-hint {
+    display: none;
+  }
+
+  body.online-match.is-reviewing #screen-game .move-nav-bar {
+    display: flex;
+  }
+
+  #screen-game .game-bottom-bar {
+    gap: 6px;
+    margin: 0;
+  }
+
+  /* Whatever the controls come to, they stay inside the screen. Six rows of
+     chrome will not fit 375 pixels on every phone, and a column that scrolls
+     is better than one whose last button is under the bezel. */
+  #screen-game > *:not(.board-arena) {
+    min-height: 0;
+  }
+
+  #screen-game .game-bottom-bar .action-btn {
+    font-size: 0.78rem;
+    min-height: 40px;
+    padding: 0 8px;
+  }
+
+  /* A hover-only preview row has nothing to say to a thumb and costs height. */
+  #screen-game .drop-selector-bar {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   TOWER OF ENEMIES (MORTAL KOMBAT STYLE LADDER & PLACEMENT SYSTEM)
+   ========================================================================== */
+
+.tower-card {
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+  border-color: rgba(244, 63, 94, 0.35);
+}
+
+.tower-card:hover {
+  border-color: #f43f5e;
+  box-shadow: 0 0 25px rgba(244, 63, 94, 0.3);
+}
+
+.tower-container {
+  /* `width: 100%` is doing real work here. As a flex item with no width it
+     sizes to its content, which came to 501px inside a 355px phone screen —
+     and because the shell clips its overflow the surplus was not scrollable,
+     just gone. The floor cards shrink to fit instead. */
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tower-header-box {
+  text-align: center;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+.back-link-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+}
+
+.back-link-btn:hover {
+  color: #fff;
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.tower-main-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, #ff6b6b, #feca57, #ff9ff3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
+}
+
+.tower-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* Who the scoreboard calls you during a tower fight. */
+.tower-identity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.tower-identity-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+}
+
+.tower-identity-input {
+  width: 150px;
+  max-width: 45vw;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.tower-identity-input:focus {
+  outline: none;
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.12);
+}
+
+.tower-floors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tower-floor-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  backdrop-filter: blur(12px);
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tower-floor-card.active {
+  border-color: #f59e0b;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(15, 23, 42, 0.9) 100%);
+  animation: pulseCard 2s infinite ease-in-out;
+}
+
+@keyframes pulseCard {
+  0%, 100% { border-color: rgba(245, 158, 11, 0.5); }
+  50% { border-color: rgba(245, 158, 11, 1); box-shadow: 0 0 25px rgba(245, 158, 11, 0.5); }
+}
+
+.tower-floor-card.defeated {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.05);
+  opacity: 0.85;
+}
+
+.tower-floor-card.locked {
+  opacity: 0.45;
+  filter: grayscale(0.6);
+}
+
+.floor-rank-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Wide enough for "FLOOR XIII" — the ladder runs to XV now, not V. */
+  min-width: 76px;
+}
+
+.floor-roman {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.floor-tier-name {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.floor-avatar-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.floor-details-col {
+  flex: 1;
+  /* A flex item refuses to shrink below its content unless it is allowed to.
+     Without this the boss names and quotes held the card open past the edge of
+     a phone, and the shell clipped the difference rather than scrolling it. */
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.floor-boss-header {
+  display: flex;
+  align-items: baseline;
+  /* Name and epithet sit side by side where there is room, and stack where
+     there is not, rather than squeezing into two thin columns of one word. */
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.floor-boss-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.floor-boss-title {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.floor-boss-quote {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.floor-action-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.floor-badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.5px;
+}
+
+.floor-badge.active-badge {
+  background: #f59e0b;
+  color: #000;
+}
+
+.floor-badge.defeated-badge {
+  background: #10b981;
+  color: #fff;
+}
+
+.floor-badge.locked-badge {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+}
+
+.btn-challenge-floor {
+  padding: 6px 18px;
+  font-size: 0.85rem;
+}
+
+.tower-footer-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.small-btn {
+  font-size: 0.75rem;
+  padding: 6px 14px;
+}
+
+/* Versus Modal */
+.versus-card {
+  max-width: 520px;
+  text-align: center;
+}
+
+.versus-header {
+  margin-bottom: 18px;
+}
+
+.versus-title {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+.versus-fighters-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin: 20px 0;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: var(--radius-md);
+}
+
+.vs-fighter-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.vs-avatar-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  background: rgba(0, 0, 0, 0.5);
+  margin-bottom: 6px;
+}
+
+.vs-middle-divider {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.vs-lightning {
+  font-size: 1.6rem;
+  animation: pulseLightning 1s infinite alternate;
+}
+
+@keyframes pulseLightning {
+  from { transform: scale(0.9); }
+  to { transform: scale(1.15); }
+}
+
+.vs-text {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #f59e0b;
+}
+
+.vs-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.vs-role {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.vs-quote {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--accent-yellow);
+  margin-bottom: 24px;
+}
+
+/* Placement Certificate Modal */
+.placement-card {
+  max-width: 480px;
+  text-align: center;
+}
+
+.placement-badge-icon {
+  font-size: 3.5rem;
+  margin: 12px 0;
+  animation: bounceBadge 1s ease;
+}
+
+@keyframes bounceBadge {
+  0% { transform: scale(0.3); opacity: 0; }
+  60% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1.0); }
+}
+
+.full-box {
+  width: 100%;
+}
+
+.placement-footnote {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+
+/* ==========================================================================
+   BETWEEN TWO FLOORS
+   The screen that shows the climb. Its whole job is to make one step up the
+   ladder impossible to miss, so the bar animates from where the player was to
+   where they are and the two ranks are set side by side rather than one
+   replacing the other.
+   ========================================================================== */
+.progress-card {
+  max-width: 460px;
+  text-align: center;
+}
+
+/* The climb is a tall card — a title, a bar, a fighter and two buttons — and
+   on a 568px phone the buttons fell off the bottom with nothing to scroll.
+   The card keeps its own scrollbar rather than pushing them out of reach. */
+.progress-card,
+.placement-card,
+.versus-card {
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+}
+
+.prog-climb {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 18px 0;
+  padding: 16px;
+}
+
+.prog-climb-head {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.prog-rank {
+  color: var(--text-muted);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  /* "SILVER III" broken over two lines reads as two different things. */
+  white-space: nowrap;
+}
+
+/* Where they are now, which is the half worth reading. */
+.prog-rank-to {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.prog-arrow {
+  color: var(--accent-purple-bright);
+  font-size: 0.8rem;
+}
+
+/* A band change is a bigger event than a division change, so it is louder. */
+.prog-climb.is-promotion {
+  border-color: var(--accent-purple-glow);
+  box-shadow: 0 0 22px rgba(217, 70, 239, 0.25);
+}
+
+.prog-climb.is-promotion .prog-rank-to {
+  color: var(--accent-purple-bright);
+  text-shadow: 0 0 14px var(--accent-purple-glow);
+}
+
+/* A floor that was held moves nothing, and says so quietly. */
+.prog-climb.is-held .prog-arrow,
+.prog-climb.is-held .prog-rank-to {
+  color: var(--text-muted);
+  text-shadow: none;
+}
+
+.prog-bar {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 999px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.prog-bar-fill {
+  background: var(--accent-purple-gradient);
+  border-radius: 999px;
+  height: 100%;
+  transition: width 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  width: 0;
+}
+
+/* Somebody who asked their system not to animate gets the new value directly.
+   The number beside the bar says the same thing either way. */
+@media (prefers-reduced-motion: reduce) {
+  .prog-bar-fill { transition: none; }
+}
+
+.prog-bar-label {
+  color: var(--text-secondary);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+}
+
+.prog-next {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.prog-next-kicker {
+  color: var(--text-muted);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.65rem;
+  letter-spacing: 0.16em;
+}
+
+.prog-next-row {
+  align-items: center;
+  display: flex;
+  gap: 14px;
+}
+
+.prog-next-avatar {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  flex-shrink: 0;
+  font-size: 1.5rem;
+  line-height: 46px;
+  text-align: center;
+  width: 46px;
+}
+
+.prog-next-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.prog-next-text strong {
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.prog-next-text span {
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+}
+
+
+
+/* ==========================================================================
+   TOWER ON A PHONE
+   The floor card is four columns side by side, which is fine at 680px and
+   impossible at 355. Left as it was, the boss quote came out one word per
+   line with the Locked badge pushed off the edge.
+
+   The badge takes a row of its own, and the rank column gives up a few pixels,
+   which leaves the quote something like a sentence's worth of width.
+   ========================================================================== */
+@media (max-width: 520px) {
+  .tower-floor-card {
+    flex-wrap: wrap;
+    padding: 12px 14px;
+  }
+
+  .floor-rank-col {
+    min-width: 52px;
+  }
+
+  .floor-details-col {
+    flex: 1 1 55%;
+  }
+
+  .floor-action-col {
+    flex: 1 0 100%;
+    justify-content: flex-end;
+  }
+
+  .tower-main-title {
+    font-size: 1.6rem;
+    letter-spacing: 1px;
+  }
+}
+
+/* ==========================================================================
+   PUZZLE SURGE (200 TACTICAL CHALLENGES) STYLES
+   ========================================================================== */
+
+.puzzle-card-menu {
+  background: linear-gradient(135deg, rgba(217, 70, 239, 0.15) 0%, rgba(99, 102, 241, 0.15) 100%);
+  border-color: rgba(217, 70, 239, 0.35);
+}
+
+.puzzle-card-menu:hover {
+  border-color: #d946ef;
+  box-shadow: 0 0 25px rgba(217, 70, 239, 0.35);
+}
+
+.puzzle-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.puzzle-header-box {
+  text-align: center;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+.puzzle-main-title {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, #f0abfc, #d946ef, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
+}
+
+.puzzle-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+.puzzle-stats-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.puzzle-stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  padding: 6px 16px;
+  border-radius: var(--radius-full);
+}
+
+.puzzle-stat-pill .stat-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+}
+
+.puzzle-stat-pill strong {
+  font-size: 1rem;
+  color: #ffd166;
+}
+
+/* Tier Navigation Tabs */
+.puzzle-tier-tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.puzzle-tier-tab {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.puzzle-tier-tab:hover:not(.locked) {
+  border-color: rgba(217, 70, 239, 0.6);
+  background: rgba(217, 70, 239, 0.08);
+}
+
+.puzzle-tier-tab.active {
+  border-color: #d946ef;
+  background: linear-gradient(135deg, rgba(217, 70, 239, 0.2) 0%, rgba(99, 102, 241, 0.12) 100%);
+  box-shadow: 0 0 16px rgba(217, 70, 239, 0.25);
+}
+
+.puzzle-tier-tab.locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+}
+
+.tier-tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tier-tab-num {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #d946ef;
+}
+
+.tier-tab-badge {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.tier-tab-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tier-tab-progress-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.tier-tab-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #d946ef, #34d399);
+  transition: width 0.3s ease;
+}
+
+/* Tier Description Box */
+.puzzle-tier-desc-box {
+  background: rgba(18, 24, 38, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+}
+
+.tier-desc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.tier-desc-head h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.tier-target-pill {
+  background: rgba(217, 70, 239, 0.2);
+  border: 1px solid rgba(217, 70, 239, 0.5);
+  color: #f0abfc;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+}
+
+.tier-focus-text {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* 20 Puzzle Cards Grid */
+.puzzle-grid-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.puzzle-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.puzzle-card:hover:not(.locked) {
+  border-color: rgba(217, 70, 239, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(217, 70, 239, 0.2);
+}
+
+.puzzle-card.solved {
+  border-color: rgba(52, 211, 153, 0.4);
+  background: linear-gradient(135deg, rgba(18, 24, 38, 0.9) 0%, rgba(16, 185, 129, 0.08) 100%);
+}
+
+.puzzle-card.locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(0.8);
+}
+
+.puzzle-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.puzzle-card-num {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.puzzle-card.solved .puzzle-card-num {
+  color: #34d399;
+}
+
+.puzzle-card-target {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.puzzle-card-stars {
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+}
+
+.puzzle-star.full {
+  color: #ffd166;
+}
+
+.puzzle-star.empty {
+  color: rgba(255, 255, 255, 0.15);
+}
+
+.puzzle-card-surge-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.surge-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.surge-tag.p-surge {
+  background: rgba(217, 70, 239, 0.2);
+  color: #f0abfc;
+  border: 1px solid rgba(217, 70, 239, 0.4);
+}
+
+.surge-tag.no-surge {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-muted);
+}
+
+.surge-tag.o-surge {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+@media (max-width: 600px) {
+  .puzzle-grid-list {
+    grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+    gap: 8px;
+  }
+  .puzzle-card {
+    padding: 10px 8px;
+  }
+  .puzzle-main-title {
+    font-size: 1.7rem;
+  }
+}
+
+
+/* The post-to-one-app row under the share buttons.
+   These are deliberately quieter than the action buttons above them: the card
+   is the thing worth sharing, and this row is the fallback for the sites that
+   will only take a link. */
+.share-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.share-link-btn {
+  flex: 1 1 auto;
+  min-width: 88px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(217, 70, 239, 0.35);
+  background: rgba(217, 70, 239, 0.08);
+  color: var(--text-muted, #b9a6d0);
+  font: 700 0.82rem/1 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.share-link-btn:hover,
+.share-link-btn:focus-visible {
+  background: rgba(217, 70, 239, 0.2);
+  border-color: rgba(217, 70, 239, 0.7);
+  color: #fff;
+}

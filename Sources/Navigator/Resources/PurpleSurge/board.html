@@ -1,0 +1,88 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'none'; frame-src 'none'"><link rel="stylesheet" href="css/main.css"><link rel="stylesheet" href="css/board.css"><link rel="stylesheet" href="css/animations.css"><link rel="stylesheet" href="css/accessible.css"><link rel="stylesheet" href="css/shell.css"><link rel="stylesheet" href="css/navigator.css"></head><body data-turn-light="on" data-turn="1"><section id="screen-game" class="screen active">        <div class="game-hud">
+          <!-- Player 1 Info -->
+          <div id="p1-card" class="player-card p1 active-turn">
+            <div class="player-avatar red-avatar">
+              <span class="avatar-sym">🔴</span>
+            </div>
+            <div class="player-meta">
+              <div class="player-name-row">
+                <span id="p1-mascot" class="player-mascot hidden" aria-hidden="true"></span>
+                <span id="p1-name" class="player-name">You</span>
+                <span id="p1-crown" class="champ-crown hidden" title="Champion's Advantage (Goes First)">👑</span>
+              </div>
+              <div class="player-score-box">
+                <span class="score-label">SURGE</span>
+                <span id="p1-score" class="score-value">1</span>
+                <span id="p1-clock" class="player-clock hidden" aria-label="Player 1's remaining time">5:00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Player 2 / CPU Info -->
+          <div id="p2-card" class="player-card p2">
+            <div class="player-avatar yellow-avatar">
+              <span class="avatar-sym" id="p2-avatar-sym">🟡</span>
+            </div>
+            <div class="player-meta">
+              <div class="player-name-row">
+                <span id="p2-name" class="player-name">Opponent</span>
+                <span id="p2-crown" class="champ-crown hidden" title="Champion's Advantage (Goes First)">👑</span>
+              </div>
+              <div class="player-score-box">
+                <span class="score-label">SURGE</span>
+                <span id="p2-score" class="score-value">1</span>
+                <span id="p2-clock" class="player-clock hidden" aria-label="Player 2's remaining time">5:00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Turn status sits directly over the board, where the next action
+             happens. It wears the colour of the token that is to move. -->
+        <div class="turn-status-bar turn-announcer" id="turn-announcer" role="status" aria-live="polite" aria-atomic="true">
+          <span class="turn-token" id="turn-token" aria-hidden="true"></span>
+          <span class="turn-copy">
+            <span class="round-badge" id="round-indicator">ROUND 1</span>
+            <span id="current-player-label" class="turn-label">PLAYER 1'S TURN</span>
+            <span id="turn-sub" class="turn-sub">Tap a column to drop your token</span>
+          </span>
+          <!-- The way back to the list a puzzle was picked from. It rides on the
+               puzzle's own banner rather than the tool row below, which already
+               holds as many buttons as a narrow column can take. Shown and
+               hidden by puzzle.js. -->
+          <button id="btn-puzzle-back-hub" class="turn-back-btn hidden" type="button" title="Back to the puzzle list">‹ Puzzles</button>
+        </div>
+
+<div class="board-wrapper" id="board-wrapper"><div class="board-frame" id="board-grid"></div><div id="laser-beam" class="laser-beam"></div><svg id="win-line-svg" class="win-line-svg" viewBox="0 0 700 600" preserveAspectRatio="none"></svg><div class="power-preview" id="power-preview"><span id="power-preview-glyph"></span></div></div><div id="columns" aria-label="Choose a column"></div>        <div class="surge-launch-bar" id="surge-launch-bar">
+          <button id="btn-use-purple" class="purple-surge-btn special-surge-btn power-cell" aria-label="Arm Purple Surge" type="button">
+            <span class="power-cell-token purple"><span class="surge-icon" id="surge-btn-icon" aria-hidden="true"></span></span>
+            <span class="power-cell-copy">
+              <span class="power-cell-head"><span class="surge-text" id="surge-btn-text">PURPLE SURGE</span><span class="power-cell-state" id="surge-btn-state">CHARGED</span></span>
+              <span class="power-cell-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+              <span class="surge-cost" id="surge-btn-cost">Wipes a whole row. One per round.</span>
+            </span>
+            <span class="power-cell-arm" id="surge-btn-arm">ARM</span>
+          </button>
+          <button id="btn-use-green" class="purple-surge-btn special-surge-btn green-mode power-cell hidden" aria-label="Arm Gravity Flip" type="button">
+            <span class="power-cell-token green"><span class="surge-icon" aria-hidden="true"></span></span>
+            <span class="power-cell-copy">
+              <span class="power-cell-head"><span class="surge-text" id="green-btn-text">GRAVITY FLIP</span><span class="power-cell-state" id="green-btn-state">CHARGED</span></span>
+              <span class="power-cell-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+              <span class="surge-cost" id="green-btn-cost">Flips the board over. One per round.</span>
+            </span>
+            <span class="power-cell-arm" id="green-btn-arm">ARM</span>
+          </button>
+          <!-- The other player has armed theirs. Shown on this screen the
+               moment it happens, so it is never a surprise. -->
+          <div id="surge-incoming" class="power-cell power-cell-incoming hidden" role="status" aria-live="assertive">
+            <span class="power-cell-token purple" id="surge-incoming-token"></span>
+            <span class="power-cell-copy">
+              <span class="power-cell-state incoming-state">INCOMING</span>
+              <span class="surge-text" id="surge-incoming-title">Opponent has armed Purple Surge</span>
+              <span class="surge-cost" id="surge-incoming-sub">Their next token wipes a whole row. You cannot resign while it is armed.</span>
+            </span>
+          </div>
+          <p class="surge-hint" id="surge-hint">One per round. Arm it, then pick a column.</p>
+        </div>
+
+<div class="move-nav-bar"><button id="undo" class="move-nav-btn" aria-label="Undo">◀</button><div class="move-nav-info"><span id="move-count" class="move-nav-badge"></span><span class="move-nav-label">Puzzle progress</span></div><button id="next" class="move-nav-btn" aria-label="Next puzzle">▶</button></div><div class="game-bottom-bar"><button id="restart" class="subtle-btn game-tool-btn">↻ Restart</button><button id="hint" class="subtle-btn game-tool-btn">💡 Hint</button><button id="rules" class="subtle-btn game-tool-btn">ⓘ Rules</button></div><p id="help" class="status-tip" hidden></p></section><script src="rules.js"></script><script src="puzzle-defence.js"></script><script src="board-renderer.js"></script><script src="navigator-board.js"></script></body></html>

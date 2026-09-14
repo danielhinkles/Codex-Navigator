@@ -1,0 +1,56 @@
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; overflow:hidden; background:transparent; color:white; font-family:var(--font-main); }
+.board-wrapper { filter:none; }
+#columns { display:grid; grid-template-columns:repeat(7,1fr); margin:0 13.114% 0 10.166%; height:25px; }
+#columns button { border:0; border-radius:5px; color:#94a3b8; background:transparent; font:11px var(--font-main); cursor:pointer; }
+#columns button:hover, #columns button:focus-visible { background:#b5179e55; color:white; outline:1px solid #d946ef; }
+#columns button:disabled { opacity:.35; cursor:default; }
+body[data-reduced] *, body[data-reduced] *::before, body[data-reduced] *::after { animation:none !important; transition:none !important; }
+/* Only fit the existing game shell to Navigator's narrow drawer. */
+html, body { width:100%; height:100%; min-width:0; min-height:0; background:#07090e; }
+body { display:block; overflow-y:auto; }
+#screen-game.screen { display:flex; flex-direction:column; gap:8px; width:100%; max-width:none; min-height:0; margin:0; padding:8px 4px 12px; overflow:visible; }
+#screen-game .game-hud { display:grid; grid-template-columns:1fr 1fr; width:100%; margin:0; gap:6px; }
+#screen-game .player-card { min-width:0; padding:6px; }
+#screen-game .player-avatar { width:26px; height:26px; }
+#screen-game .player-name { font-size:11px; }
+#screen-game .turn-status-bar { width:100%; margin:0; min-height:54px; }
+#screen-game .board-wrapper { flex:none; width:100%; margin:0; }
+#screen-game .surge-launch-bar { width:100%; margin:0; }
+#screen-game .move-nav-bar, #screen-game .game-bottom-bar { width:100%; margin:0; }
+#screen-game .game-bottom-bar { display:flex; gap:5px; }
+#screen-game .game-tool-btn { flex:1; min-width:0; font-size:11px; }
+#screen-game .status-tip { position:static; width:100%; white-space:normal; padding:6px; font-size:11px; }
+#screen-game [hidden], #screen-game .hidden { display:none !important; }
+#screen-game .turn-status-bar { animation:none; }
+#columns { height:16px; flex:none; }
+body { --coin-image:url('../img/token-red.webp'); --coin-tint:none; }
+body[data-turn="2"] { --coin-image:url('../img/token-yellow.webp'); }
+.player-avatar .avatar-sym { font-size:0; width:26px; height:26px; background:url('../img/token-red.webp') center/contain no-repeat; }
+.yellow-avatar .avatar-sym { background-image:url('../img/token-yellow.webp'); }
+#screen-game .turn-status-bar.is-p2:not(.is-armed) { --tc-a:#ffc107; --tc-b:#b87500; --tc-glow:rgba(255,193,7,.5); --tc-ring:rgba(255,193,7,.35); }
+#screen-game .board-wrapper { max-width:calc(100vh - 330px); align-self:center; }
+#screen-game #columns { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); width:76.72%; max-width:calc((100vh - 330px) * .7672); margin:0 auto; }
+#screen-game .score-value::before { content:'SURGE '; }
+#screen-game .power-cell-head { flex-direction:column; align-items:flex-start; gap:0; }
+#screen-game .power-cell .surge-text { font-size:12px; white-space:normal; }
+#screen-game .power-cell { padding:8px; gap:8px; }
+#screen-game .power-cell-token { width:46px; height:46px; }
+#screen-game .power-cell-arm { padding:10px 8px; font-size:12px; }
+#screen-game .board-wrapper { max-width:calc(100vh - 215px); }
+#screen-game #columns { max-width:calc((100vh - 215px) * .7672); }
+@media (max-height:450px) {
+ #screen-game.screen { gap:4px; padding-top:4px; }
+ #screen-game .player-card { min-height:36px; padding:4px; gap:6px; }
+ #screen-game .score-value { font-size:12px; }
+ #screen-game .turn-status-bar { min-height:44px; padding:4px 8px; }
+ #screen-game .turn-label { font-size:17px; }
+ #screen-game .turn-sub { font-size:10px; }
+ #screen-game .power-cell { min-height:64px; padding:4px 6px; }
+ #screen-game .power-cell-token { width:36px; height:36px; }
+ #screen-game .power-cell-token::after { width:32px; height:32px; }
+ #screen-game .power-cell-copy { gap:2px; }
+ #screen-game .surge-hint { font-size:8px; margin:0; }
+}
+#screen-game .move-nav-bar { display:flex; min-height:36px; padding:3px; }
+#screen-game .move-nav-btn { min-height:28px; height:28px; }

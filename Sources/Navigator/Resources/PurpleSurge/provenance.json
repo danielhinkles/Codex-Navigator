@@ -1,0 +1,86 @@
+{
+  "rules.js": {
+    "source": "public/purple-surge/js/rules.js",
+    "sha256": "83899fec4e2072d78804f5055c65b0746caac8e603c11e539c7c1b53c003231d"
+  },
+  "puzzle-defence.js": {
+    "source": "public/purple-surge/js/puzzle-defence.js",
+    "sha256": "bf104cc8d1b74c0eb13007612587b8aa4ba64a59fafe588f085e6bf7f6057ef3"
+  },
+  "puzzles.json": {
+    "source": "lib/puzzles/puzzles-data.json",
+    "sha256": "37374dcc2cda4369953599afb8f0155dc1bf5adc971d8105b486ba7aeeac255e"
+  },
+  "waving.webp": {
+    "source": "public/purple-surge/img/surgio/waving.webp",
+    "sha256": "24ad72268988bcd33893eff96309f368277d27840f66f4bd6b3c1c98dcf0bc6f"
+  },
+  "celebrating.webp": {
+    "source": "public/purple-surge/img/surgio/celebrating.webp",
+    "sha256": "48b797dd42f7e732e0ed05d4c534e67353c8d428e720a79835f78c5e39550bfe"
+  },
+  "css/board.css": {
+    "source": "public/purple-surge/css/board.css",
+    "sha256": "5ad5098f824306dc4ed31f200648f64861b4c182a47271070dfc514ebf2c6e6a"
+  },
+  "css/animations.css": {
+    "source": "public/purple-surge/css/animations.css",
+    "sha256": "c4a2d7f8a15bf286ae4c76c8795a33db06169edb3cc7b2a9884f2d56941b0d0c"
+  },
+  "img/board-frame-clean.webp": {
+    "source": "public/purple-surge/img/board-frame-clean.webp",
+    "sha256": "7673f74141f4981010d1204fe53fd541ed683805e0e3dd418cc92d218f40d360"
+  },
+  "img/board-neon.webp": {
+    "source": "public/purple-surge/img/board-neon.webp",
+    "sha256": "87716861583911081bc847bd3f6a5a9a018bde8fa6a2fa54e5635830d3b0af59"
+  },
+  "img/token-red.webp": {
+    "source": "public/purple-surge/img/token-red.webp",
+    "sha256": "7f00b67182ae8578d5c6f002a4caa5cde13bfd41ed266b65a7d563afd98167dd"
+  },
+  "img/token-yellow.webp": {
+    "source": "public/purple-surge/img/token-yellow.webp",
+    "sha256": "0ef9ce8124f04976bf315515341301f546dea09224416efa305b848deb2f5fe1"
+  },
+  "img/token-purple.webp": {
+    "source": "public/purple-surge/img/token-purple.webp",
+    "sha256": "d558b779a2f3db8bb7ecaa84e0298ce435f015424b794b504f06e8b4848d01fc"
+  },
+  "img/token-green.webp": {
+    "source": "public/purple-surge/img/token-green.webp",
+    "sha256": "422d6663a6bb3df8473400bf11435f62005ed3b42bc61e38089b312aea022a0d"
+  },
+  "board-renderer.js": {
+    "source": "public/purple-surge/js/main.js",
+    "methods": [
+      "initBoardDOM",
+      "animateTokenDrop",
+      "animateRowLaserVaporize",
+      "animateGravityCollapse",
+      "highlightWinLine",
+      "clearWinLine",
+      "renderGrid",
+      "triggerScreenShake",
+      "showPowerPreview",
+      "clearPowerPreview"
+    ],
+    "sha256": "0a182a935e2f41e94094c2bdee9959d99733bfda446ef96515640c71f052d228"
+  },
+  "css/theme.css": {
+    "source": "public/purple-surge/css/main.css (:root)",
+    "sha256": "e04bd69588880fbd0a98b5bb7c4d8f3fb1dfbc2ad839edc4397828766bee88c1"
+  },
+  "css/main.css": {
+    "source": "public/purple-surge/css/main.css",
+    "sha256": "77b7e388fd21f3e78146d6c5267f6a13c22360eaa50924fdeb83d07aa28a3f83"
+  },
+  "css/shell.css": {
+    "source": "public/purple-surge/css/shell.css",
+    "sha256": "cf018d7b72876dd5c9ceb2189399656b20d0ef9410e01025e60bcc78bfeacc8f"
+  },
+  "css/accessible.css": {
+    "source": "public/purple-surge/css/accessible.css",
+    "sha256": "b4672364ebb853ae312b5571ad6d39b59fd9a041703a5ffb9e0cc06c6e0ea7ad"
+  }
+}

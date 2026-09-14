@@ -1,0 +1,726 @@
+/* ==========================================================================
+   BOARD.CSS - High-Contrast 6x7 Grid Board, Acrylic Light Chassis & Slot Depth
+   ========================================================================== */
+
+/* The tokens are regular octagons — eight equal sides, flats top, bottom, left
+   and right — which is the shape of the moulded art. Cutting 1/(2+√2) off each
+   corner of a square is what makes the sides come out equal. */
+:root {
+  --octagon: polygon(29.289% 0%, 70.711% 0%, 100% 29.289%, 100% 70.711%, 70.711% 100%, 29.289% 100%, 0% 70.711%, 0% 29.289%);
+}
+
+.board-arena {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 700px;
+  position: relative;
+  margin: 0 auto;
+}
+
+/* Drop Selector Indicator Bar (Hover / Ghost token guides) */
+.drop-selector-bar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+  width: 100%;
+  padding: 0 16px;
+  /* This row is invisible until you hover a column, so it earns very little
+     height. What it gives up here goes straight into the board. */
+  margin-bottom: 6px;
+  height: 34px;
+}
+
+.drop-col-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s ease;
+}
+
+.drop-col-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.drop-ghost-token {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  opacity: 0;
+  transform: translateY(-8px) scale(0.85);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.drop-col-btn:hover .drop-ghost-token {
+  opacity: 0.95;
+  transform: translateY(0) scale(1);
+}
+
+.drop-col-btn.full {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+.drop-col-btn.full:hover .drop-ghost-token {
+  display: none;
+}
+
+/* Ghost Token Variations — the same art as the piece you are about to drop */
+.drop-ghost-token.red,
+.drop-ghost-token.yellow,
+.drop-ghost-token.purple,
+.drop-ghost-token.green {
+  border-radius: 0;
+  background: center / contain no-repeat;
+}
+/* One filter, not two: a second `filter` declaration replaces the first
+   rather than adding to it, so the tint and the glow have to travel together. */
+.drop-ghost-token.red {
+  background-image: var(--p1-token-image, url('../img/token-red.webp'));
+  filter: var(--p1-token-tint, none) drop-shadow(0 0 10px var(--p1-token-glow, var(--accent-red-glow)));
+}
+.drop-ghost-token.yellow {
+  background-image: var(--p2-token-image, url('../img/token-yellow.webp'));
+  filter: var(--p2-token-tint, none) drop-shadow(0 0 10px var(--p2-token-glow, var(--accent-yellow-glow)));
+}
+.drop-ghost-token.purple {
+  background-image: url('../img/token-purple.webp');
+  filter: drop-shadow(0 0 16px var(--accent-purple-glow));
+  animation: pulseGhostPurple 1s infinite alternate ease-in-out;
+}
+.drop-ghost-token.green {
+  background-image: url('../img/token-green.webp');
+  filter: drop-shadow(0 0 16px rgba(16, 185, 129, 0.85));
+  animation: pulseGhostGreen 1s infinite alternate ease-in-out;
+}
+
+@keyframes pulseGhostPurple {
+  from { transform: translateY(0) scale(1); filter: brightness(1); }
+  to { transform: translateY(0) scale(1.1); filter: brightness(1.3); }
+}
+
+@keyframes pulseGhostGreen {
+  from { transform: translateY(0) scale(1); filter: brightness(1); }
+  to { transform: translateY(0) scale(1.1); filter: brightness(1.35); }
+}
+
+/* ==========================================================================
+   BOARD CHASSIS — the real board art, lit from behind
+
+   The frame is one PNG with the 42 slots punched out as transparent
+   octagons, so the tokens sit BEHIND it and the bezels overlap their edges.
+   Its neon strips ship unlit; a second masked layer paints them, which is why
+   one asset covers every colour the game needs. --board-neon drives it.
+   ========================================================================== */
+
+body {
+  --board-neon: #4fc3f7;
+  --board-neon-glow: rgba(79, 195, 247, 0.55);
+}
+
+/* The existing grid-theme button now picks the colour of the light. */
+body.theme-white {
+  --board-neon: #eaf6ff;
+  --board-neon-glow: rgba(230, 245, 255, 0.5);
+}
+
+body.theme-cobalt {
+  --board-neon: #2f6bff;
+  --board-neon-glow: rgba(47, 107, 255, 0.65);
+}
+
+/* Opt-in: the board takes the colour of whoever is to move, while there is
+   nothing louder to say.
+ *
+ * `:not([data-surge])` is not decoration. Naming two attributes made these
+ * rules heavier than the armed-special rules below, and specificity is settled
+ * before source order — so with the Turn Light on, arming a Purple Surge left
+ * the board sitting in the colour of whoever was to move instead of flooding
+ * it. The Turn Light defaults to on, so that was most players, and what they
+ * were missing was the game's loudest warning. Saying when the Turn Light does
+ * not apply is both the fix and the rule itself. */
+body[data-turn-light="on"][data-turn="1"]:not([data-surge]) {
+  --board-neon: var(--p1-light, #ff2d55);
+  --board-neon-glow: var(--p1-light-glow, rgba(255, 45, 85, 0.6));
+}
+
+body[data-turn-light="on"][data-turn="2"]:not([data-surge]) {
+  --board-neon: var(--p2-light, #ffc400);
+  --board-neon-glow: var(--p2-light-glow, rgba(255, 196, 0, 0.55));
+}
+
+/* An armed special move floods the whole board and beats every other rule. */
+body[data-surge="purple"] {
+  --board-neon: #ea2bff;
+  --board-neon-glow: rgba(234, 43, 255, 0.8);
+}
+
+body[data-surge="green"] {
+  --board-neon: #21e6a0;
+  --board-neon-glow: rgba(33, 230, 160, 0.75);
+}
+
+.board-wrapper {
+  /* Where the playfield sits inside the chassis art. The slots are on a 148.5px
+     pitch from (137.75, 109.25) in a 1355x1161 frame. Everything that has to
+     line up with a row or a column reads these. */
+  --grid-left: 10.166%;
+  --grid-top: 9.410%;
+  --grid-w: 76.72%;
+  --grid-h: 76.74%;
+  --grid-row-h: 12.79%;
+
+  position: relative;
+  width: 100%;
+  /* The frame art's own proportions, so the slots land where the holes are. */
+  aspect-ratio: 1355 / 1161;
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  /* Keeps a dropping token hidden until it clears the top rail. */
+  overflow: hidden;
+  /* On the wrapper, not a child, so it escapes that clip. */
+  filter: drop-shadow(0 22px 34px rgba(0, 0, 0, 0.8));
+  transition: filter 0.4s ease;
+}
+
+/**
+ * The tap layer: seven invisible columns lying over the whole board.
+ *
+ * The playfield only occupies the middle 76.72% of the chassis art, so a rail
+ * runs above the top row and down both sides. A thumb aiming above the stack
+ * during quick play landed on that rail and nothing happened. These columns
+ * are full height, and the outer two swallow the side rails as well, so every
+ * point on the board belongs to exactly one column.
+ *
+ * The widths are derived from the same custom properties the grid itself uses,
+ * so they cannot drift out of line with the art.
+ */
+.board-touch-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  /* The board owns every gesture that starts on it. Without this the browser
+     claims a drag as a page scroll and the aim jumps out from under the
+     thumb halfway through choosing a column. */
+  touch-action: none;
+  display: grid;
+  grid-template-columns:
+    calc(var(--grid-left) + var(--grid-w) / 7)
+    repeat(5, calc(var(--grid-w) / 7))
+    calc(100% - var(--grid-left) - var(--grid-w) + var(--grid-w) / 7);
+}
+
+.board-touch-col {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  height: 100%;
+  padding: 0;
+  transition: background 0.12s ease;
+  width: 100%;
+}
+
+/* The column the finger is currently over. Without this you are dragging
+   blind: the surge preview says which row, and this says which column. */
+.board-touch-col.is-aiming {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.03) 100%);
+}
+
+.board-touch-col.full.is-aiming {
+  background: linear-gradient(180deg, rgba(255, 80, 80, 0.14) 0%, rgba(255, 80, 80, 0.03) 100%);
+}
+
+/* Marked, not disabled, for the same reason the drop bar is: handleColumnDrop
+   already ignores a press it cannot act on, and a truly disabled button that
+   failed to come back would lock a player out of their own board. */
+.board-touch-col.full {
+  cursor: not-allowed;
+}
+
+/* The chassis itself, over the tokens. */
+.board-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: url('../img/board-frame-clean.webp') center / 100% 100% no-repeat;
+}
+
+/* The light in the strips. White mask, painted in whatever colour is current,
+   and the drop-shadow follows the mask so the glow is strip-shaped. */
+.board-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: var(--board-neon);
+  -webkit-mask: url('../img/board-neon.webp') center / 100% 100% no-repeat;
+  mask: url('../img/board-neon.webp') center / 100% 100% no-repeat;
+  filter:
+    drop-shadow(0 0 6px var(--board-neon-glow))
+    drop-shadow(0 0 18px var(--board-neon-glow));
+  transition: background 0.45s ease, filter 0.45s ease;
+}
+
+/* Armed: the board breathes so you cannot miss what is about to happen. */
+body[data-surge] .board-wrapper::after {
+  animation: neonSurge 1.05s infinite alternate ease-in-out;
+}
+
+@keyframes neonSurge {
+  from {
+    filter: drop-shadow(0 0 6px var(--board-neon-glow)) drop-shadow(0 0 16px var(--board-neon-glow));
+  }
+  to {
+    filter:
+      drop-shadow(0 0 14px var(--board-neon-glow))
+      drop-shadow(0 0 44px var(--board-neon-glow))
+      brightness(1.35);
+  }
+}
+
+@media (max-width: 768px) {
+  .drop-selector-bar {
+    /* Touch players tap the board itself, so a hover-only preview row should
+       not push the board down the screen. */
+    display: none;
+  }
+
+  .drop-ghost-token {
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-surge] .board-wrapper::after {
+    animation: none;
+  }
+}
+
+/* The 6x7 Grid Container. Sits behind the chassis, inset so each cell lands
+   on one punched slot. The numbers come from the art: the holes are on a
+   148.5px pitch starting at (137.75, 109.25) in a 1355x1161 image. */
+.board-frame {
+  position: absolute;
+  left: var(--grid-left);
+  top: var(--grid-top);
+  width: var(--grid-w);
+  height: var(--grid-h);
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+  gap: 0;
+  z-index: 1;
+}
+
+/* One slot. The chassis supplies the bezel and the octagon, so this only has
+   to be the darkness you see down the hole. */
+.board-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 30%, #121826 0%, #05070d 72%);
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.board-cell:hover {
+  background: radial-gradient(circle at 50% 30%, #1d2740 0%, #070a12 72%);
+  transform: none;
+}
+
+/* ==========================================================================
+   GAME PIECES / TOKENS — the moulded octagons from the art sheet
+   ========================================================================== */
+
+/* The board is marked up as a grid with real rows, because a grid without rows
+   is not a grid to a screen reader. `display: contents` keeps the 42 squares
+   laid out by the one CSS grid on the container, exactly as before. */
+.board-row { display: contents; }
+
+.token-piece {
+  position: absolute;
+  /* Slightly wider than the punched hole, so the bezel laps its edge and the
+     token reads as sitting down inside the board rather than on top of it.
+     The hole is 70.7% of a cell; this overlaps it by a few pixels. */
+  width: 79%;
+  height: 79%;
+  border: none;
+  border-radius: 0;
+  background: center / contain no-repeat;
+  box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.1rem;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+  filter: drop-shadow(0 5px 7px rgba(0, 0, 0, 0.8));
+  z-index: 2;
+}
+
+/* `.red` and `.yellow` mean player one and player two, and have since before
+   either could choose a colour. They now read what that player picked, and
+   fall back to the two hand-made tokens the classes are named after — which is
+   what a pass-and-play game, a CPU game and every old screenshot still get.
+   `main.js` sets the variables; the palette decides them. */
+.token-piece.red {
+  background-image: var(--p1-token-image, url('../img/token-red.webp'));
+  filter: var(--p1-token-tint, none) drop-shadow(0 5px 7px rgba(0, 0, 0, 0.8));
+  color: var(--p1-token-ink, #ffffff);
+  text-shadow: var(--p1-token-ink-shadow, 0 1px 3px rgba(0, 0, 0, 0.85));
+}
+
+.token-piece.yellow {
+  background-image: var(--p2-token-image, url('../img/token-yellow.webp'));
+  filter: var(--p2-token-tint, none) drop-shadow(0 5px 7px rgba(0, 0, 0, 0.8));
+  color: var(--p2-token-ink, #1b1200);
+  text-shadow: var(--p2-token-ink-shadow, 0 1px 2px rgba(255, 255, 255, 0.55));
+}
+
+/* The two the game keeps for itself. Never tinted, never chosen. */
+.token-piece.purple { background-image: url('../img/token-purple.webp'); }
+.token-piece.green { background-image: url('../img/token-green.webp'); }
+
+/* A Gravity Flip coin is green only while it is being played. Until the board
+   settles it wears a thin ring in its owner's colour, which is all the room
+   there is to say whose it is mid-flip. */
+.token-piece.green::after {
+  content: '';
+  position: absolute;
+  inset: 11%;
+  border: 2px solid transparent;
+  clip-path: var(--octagon);
+  pointer-events: none;
+}
+
+/* The glow follows the ring rather than naming a colour of its own, so a
+   player who picked cyan does not get a cyan rim with a red halo. */
+.token-piece.green.owned-by-p1::after {
+  border-color: var(--player-one-ring, #f43f5e);
+  box-shadow: 0 0 6px var(--player-one-ring, rgba(244, 63, 94, 0.75));
+}
+
+.token-piece.green.owned-by-p2::after {
+  border-color: var(--player-two-ring, #facc15);
+  box-shadow: 0 0 6px var(--player-two-ring, rgba(250, 204, 21, 0.75));
+}
+
+/* Once the board has settled the coin is claimed: it takes its owner's colour,
+   because that is who it now scores for, and keeps a green rim so it is still
+   obvious which token arrived by flipping the board.
+
+   The rim is four stacked drop-shadows rather than a border or a pseudo
+   element. A drop-shadow traces the artwork's own alpha, so the rim follows
+   the moulded octagon exactly — a bordered box would sit at the wrong corners,
+   and a shape drawn behind the token is hidden by it. The last two shadows are
+   the green glow and the ordinary drop shadow every token has. */
+.token-piece.green-claimed {
+  filter:
+    drop-shadow(2.5px 0 0 #34d399) drop-shadow(-2.5px 0 0 #34d399)
+    drop-shadow(0 2.5px 0 #34d399) drop-shadow(0 -2.5px 0 #34d399)
+    drop-shadow(0 0 10px rgba(52, 211, 153, 0.9))
+    drop-shadow(0 5px 7px rgba(0, 0, 0, 0.8));
+}
+
+/* The coin pulses while it is about to change hands... */
+@keyframes green-claiming {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 5px 7px rgba(0,0,0,.8)); }
+  50% { transform: scale(1.16); filter: drop-shadow(0 0 26px #34d399) drop-shadow(0 0 12px #ffffff); }
+}
+
+.token-piece.green-claiming {
+  animation: green-claiming 0.31s ease-in-out 2;
+  z-index: 6;
+}
+
+/* ...and lands hard in its new colours. */
+@keyframes green-claimed-flash {
+  0% { transform: scale(1.45); filter: drop-shadow(0 0 34px #34d399) brightness(2.1); }
+  55% { transform: scale(0.94); }
+  100% { transform: scale(1); filter: drop-shadow(0 5px 7px rgba(0,0,0,.8)); }
+}
+
+.token-piece.green-claimed-flash {
+  animation: green-claimed-flash 0.7s cubic-bezier(0.16, 1, 0.3, 1) 1;
+  z-index: 6;
+}
+
+/* The two special tokens keep glowing once they have landed. */
+.token-piece.purple {
+  animation: surgePiecePulse 1.2s infinite alternate ease-in-out;
+}
+
+.token-piece.green {
+  animation: greenPiecePulse 1.2s infinite alternate ease-in-out;
+}
+
+@keyframes surgePiecePulse {
+  from { filter: drop-shadow(0 5px 7px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 8px var(--accent-purple-glow)); }
+  to { filter: drop-shadow(0 5px 7px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 22px var(--accent-purple-bright)) brightness(1.2); }
+}
+
+@keyframes greenPiecePulse {
+  from { filter: drop-shadow(0 5px 7px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 8px rgba(16, 185, 129, 0.8)); }
+  to { filter: drop-shadow(0 5px 7px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 22px #34d399) brightness(1.2); }
+}
+
+/* Winning Token Highlight */
+.token-piece.winning-token {
+  animation: winTokenGlow 0.8s infinite alternate ease-in-out;
+  z-index: 3;
+}
+
+/* Brightness rather than an outward halo: the chassis sits over this, so any
+   glow spilling onto the metal would simply be hidden behind it. */
+@keyframes winTokenGlow {
+  from {
+    transform: scale(1);
+    filter: drop-shadow(0 5px 7px rgba(0, 0, 0, 0.8)) brightness(1);
+  }
+  to {
+    transform: scale(1.06);
+    filter: drop-shadow(0 5px 7px rgba(0, 0, 0, 0.8)) brightness(1.75) drop-shadow(0 0 14px #ffffff);
+  }
+}
+
+/* Row Dissolving FX state */
+.board-cell.row-dissolving .token-piece {
+  animation: laserVaporize 0.8s forwards cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* SVG Win Line Overlay */
+.win-line-svg {
+  position: absolute;
+  left: var(--grid-left);
+  top: var(--grid-top);
+  width: var(--grid-w);
+  height: var(--grid-h);
+  pointer-events: none;
+  z-index: 20;
+}
+
+.win-line-path {
+  stroke: #ffffff;
+  stroke-width: 9;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 14px var(--accent-purple-bright)) drop-shadow(0 0 30px #ffffff);
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawWinLine 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes drawWinLine {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Laser Beam Row Vaporizer */
+.laser-beam {
+  position: absolute;
+  left: var(--grid-left);
+  width: var(--grid-w);
+  height: var(--grid-row-h);
+  pointer-events: none;
+  opacity: 0;
+  z-index: 15;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(217, 70, 239, 0.5) 15%, 
+    rgba(255, 255, 255, 1) 50%, 
+    rgba(217, 70, 239, 0.5) 85%, 
+    transparent 100%);
+  box-shadow: 
+    0 0 40px 12px var(--accent-purple-glow),
+    0 0 90px 25px rgba(255, 0, 128, 0.7);
+  transition: opacity 0.2s ease;
+}
+
+.laser-beam.active {
+  opacity: 1;
+  animation: laserSweep 0.75s ease-in-out forwards;
+}
+
+@keyframes laserSweep {
+  0% { transform: scaleY(0.1) scaleX(0.1); opacity: 0; }
+  30% { transform: scaleY(1.3) scaleX(1); opacity: 1; filter: brightness(2); }
+  70% { transform: scaleY(0.9) scaleX(1); opacity: 0.9; }
+  100% { transform: scaleY(0) scaleX(1.1); opacity: 0; }
+}
+
+/* Where the last coin went — during a live match as well as a review.
+   The ring takes the colour of whoever played it, so it says who as well as
+   where without needing a second marker. */
+.board-cell.last-move-cell {
+  position: relative;
+}
+
+.board-cell.last-move-cell::after {
+  content: '';
+  position: absolute;
+  /* Inside the punched hole, so the ring is not clipped in half by the bezel. */
+  inset: 18%;
+  border-radius: 50%;
+  border: 2.5px solid var(--last-move-ink, #ffffff);
+  box-shadow: 0 0 12px var(--last-move-ink, rgba(255, 255, 255, 0.9)), inset 0 0 10px rgba(255, 255, 255, 0.35);
+  pointer-events: none;
+  animation: pulseLastMove 1.4s infinite alternate ease-in-out;
+  z-index: 3;
+}
+
+/* The opponent's move, while you are the one who has to answer it. Thicker,
+   brighter, and it carries a white outer halo so it reads at a glance on a
+   busy board and against any coin colour. */
+.board-cell.last-move-cell.is-opponent::after {
+  /* Wider than the hole on purpose: the ring breaks the bezel line, which is
+     what makes it findable in the corner of your eye rather than something
+     you have to look for. */
+  inset: 6%;
+  border-width: 3px;
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.9),
+    0 0 14px 3px var(--last-move-ink, rgba(255, 255, 255, 0.9)),
+    0 0 34px 8px var(--last-move-ink, rgba(255, 255, 255, 0.6)),
+    inset 0 0 14px rgba(255, 255, 255, 0.5);
+  animation: pulseOpponentMove 1.1s infinite alternate ease-in-out;
+  z-index: 6;
+}
+
+@keyframes pulseLastMove {
+  from { transform: scale(0.94); opacity: 0.7; }
+  to { transform: scale(1.03); opacity: 1; }
+}
+
+@keyframes pulseOpponentMove {
+  from { transform: scale(0.92); opacity: 0.8; }
+  to { transform: scale(1.08); opacity: 1; }
+}
+
+/* A pulse nobody asked for is a pulse somebody cannot look away from. The
+   ring stays; only the movement goes. */
+@media (prefers-reduced-motion: reduce) {
+  .board-cell.last-move-cell::after,
+  .board-cell.last-move-cell.is-opponent::after {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   POWER MOVE PREVIEW
+   Both special moves cost the whole round's one use, and until now you found
+   out what they did after spending them. These show the shape of the move
+   while the column is still only being considered.
+
+   Deliberately quieter than the real effect: the laser that actually clears a
+   row is white-hot and shakes the screen. This is the same band at a fifth of
+   the brightness, so nobody mistakes the promise for the event.
+   ========================================================================== */
+.power-preview {
+  position: absolute;
+  left: var(--grid-left);
+  width: var(--grid-w);
+  height: var(--grid-row-h);
+  top: 0;
+  z-index: 7;
+  opacity: 0;
+  pointer-events: none;
+  /* Hidden by visibility as well as opacity. Opacity alone left the band on
+     screen whenever a transition on it stalled, and a preview that will not go
+     away is worse than no preview at all. */
+  visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* No transition on purpose. This follows a pointer between columns, and an
+     eased band would lag a row behind wherever the thumb actually is. */
+}
+
+/* The row a surge would take with it. */
+.power-preview.is-surge {
+  opacity: 1;
+  visibility: visible;
+  background: linear-gradient(90deg,
+    rgba(217, 70, 239, 0) 0%,
+    rgba(217, 70, 239, 0.34) 18%,
+    rgba(255, 235, 255, 0.5) 50%,
+    rgba(217, 70, 239, 0.34) 82%,
+    rgba(217, 70, 239, 0) 100%);
+  box-shadow: 0 0 22px 4px var(--accent-purple-glow);
+}
+
+.power-preview-glyph {
+  font-size: 1.1rem;
+  opacity: 0;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.power-preview.is-flip {
+  opacity: 1;
+  visibility: visible;
+  top: calc(50% - var(--grid-row-h) / 2);
+  background: none;
+  box-shadow: none;
+}
+
+.power-preview.is-flip .power-preview-glyph {
+  opacity: 0.9;
+  font-size: 2.2rem;
+}
+
+/* The real flip turns the board through 180 degrees in its own plane. This
+   leans it a few degrees the same way, so the preview reads as the beginning
+   of that move rather than as a different one. */
+.board-wrapper.flip-preview {
+  transform: rotate(4deg) scale(0.985);
+  transition: transform 0.18s ease;
+}
+
+.board-wrapper {
+  transition: filter 0.4s ease, transform 0.18s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board-wrapper.flip-preview { transform: none; }
+}
+
+/* A tap the game could not act on. Brief, and on the column that was aimed at,
+   so it reads as "seen, but not yet" rather than as a failure. */
+.board-touch-col.is-blocked {
+  animation: touch-blocked 0.4s ease;
+}
+
+@keyframes touch-blocked {
+  0% { background: rgba(255, 209, 102, 0.22); }
+  100% { background: transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board-touch-col.is-blocked { animation: none; }
+}

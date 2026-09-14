@@ -1,0 +1,215 @@
+/* ==========================================================================
+   ANIMATIONS.CSS - Drop Physics, Laser Vaporize, Slow-Mo Vignette, Coin Spin
+   ========================================================================== */
+
+/* Token Drop Physics */
+@keyframes dropToRow0 {
+  0% { transform: translateY(-500%); opacity: 0; }
+  60% { opacity: 1; }
+  85% { transform: translateY(10px); }
+  95% { transform: translateY(-4px); }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes dropToRow1 {
+  0% { transform: translateY(-600%); opacity: 0; }
+  60% { opacity: 1; }
+  85% { transform: translateY(12px); }
+  95% { transform: translateY(-5px); }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes dropToRow2 {
+  0% { transform: translateY(-700%); opacity: 0; }
+  60% { opacity: 1; }
+  85% { transform: translateY(14px); }
+  95% { transform: translateY(-6px); }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes dropToRow3 {
+  0% { transform: translateY(-800%); opacity: 0; }
+  60% { opacity: 1; }
+  85% { transform: translateY(16px); }
+  95% { transform: translateY(-7px); }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes dropToRow4 {
+  0% { transform: translateY(-900%); opacity: 0; }
+  60% { opacity: 1; }
+  85% { transform: translateY(18px); }
+  95% { transform: translateY(-8px); }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes dropToRow5 {
+  0% { transform: translateY(-1000%); opacity: 0; }
+  60% { opacity: 1; }
+  85% { transform: translateY(20px); }
+  95% { transform: translateY(-9px); }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.anim-drop-0 { animation: dropToRow0 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+.anim-drop-1 { animation: dropToRow1 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+.anim-drop-2 { animation: dropToRow2 0.46s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+.anim-drop-3 { animation: dropToRow3 0.50s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+.anim-drop-4 { animation: dropToRow4 0.54s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+.anim-drop-5 { animation: dropToRow5 0.58s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; }
+
+/* Tetris Gravity Shift Down Animation */
+@keyframes shiftDownBy1 {
+  0% { transform: translateY(-100%); }
+  75% { transform: translateY(6px); }
+  90% { transform: translateY(-2px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes shiftDownBy2 {
+  0% { transform: translateY(-200%); }
+  75% { transform: translateY(8px); }
+  90% { transform: translateY(-3px); }
+  100% { transform: translateY(0); }
+}
+
+.anim-shift-1 { animation: shiftDownBy1 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+.anim-shift-2 { animation: shiftDownBy2 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+/* Laser Vaporize Row Pieces */
+@keyframes laserVaporize {
+  0% {
+    transform: scale(1);
+    filter: brightness(1) drop-shadow(0 0 0 transparent);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(1.2);
+    filter: brightness(3) drop-shadow(0 0 20px #ffffff);
+    opacity: 1;
+  }
+  60% {
+    transform: scale(0.8) rotate(15deg);
+    filter: brightness(2) drop-shadow(0 0 35px var(--accent-purple-bright));
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(0) rotate(45deg);
+    filter: brightness(4) blur(8px);
+    opacity: 0;
+  }
+}
+
+/* Slow-Mo Vignette & Time Dilation Effect */
+.slowmo-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 90;
+  opacity: 0;
+  background: radial-gradient(circle at center, transparent 30%, rgba(181, 23, 158, 0.4) 70%, rgba(0, 0, 0, 0.85) 100%);
+  transition: opacity 0.4s ease;
+}
+
+.slowmo-overlay.slowmo-green {
+  background: radial-gradient(circle at center, transparent 30%, rgba(16, 185, 129, 0.45) 70%, rgba(0, 0, 0, 0.85) 100%);
+}
+
+.slowmo-overlay.active {
+  opacity: 1;
+  animation: pulseSlowmo 1.2s infinite alternate ease-in-out;
+}
+
+@keyframes pulseSlowmo {
+  from { opacity: 0.7; transform: scale(1); }
+  to { opacity: 1; transform: scale(1.02); }
+}
+
+/* 180-Degree 3D Board Flip Animation */
+.board-wrapper.board-flipping-180 {
+  animation: flipBoard180 0.85s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transform-style: preserve-3d;
+}
+
+@keyframes flipBoard180 {
+  0% {
+    transform: rotate(0deg) scale(1);
+    box-shadow: 0 25px 50px -10px rgba(0, 0, 0, 0.9), 0 0 40px rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    transform: rotate(90deg) scale(0.88);
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.95), 0 0 70px rgba(16, 185, 129, 0.9);
+  }
+  100% {
+    transform: rotate(180deg) scale(1);
+    box-shadow: 0 25px 50px -10px rgba(0, 0, 0, 0.9), 0 0 40px rgba(16, 185, 129, 0.5);
+  }
+}
+
+/* Cascade Falling Drop after 180° Inversion */
+@keyframes cascadeDrop {
+  0% { transform: translateY(-400%); opacity: 0.5; }
+  60% { opacity: 1; }
+  85% { transform: translateY(14px); }
+  95% { transform: translateY(-4px); }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.anim-cascade-drop {
+  animation: cascadeDrop 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) backwards;
+}
+
+/* Screen Shake for Big Impacts */
+.shake-screen {
+  animation: screenShake 0.45s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes screenShake {
+  10%, 90% { transform: translate3d(-2px, 0, 0); }
+  20%, 80% { transform: translate3d(4px, -2px, 0); }
+  30%, 50%, 70% { transform: translate3d(-6px, 4px, 0); }
+  40%, 60% { transform: translate3d(6px, -4px, 0); }
+}
+
+/* 3D Coin Toss Animation */
+.coin-spinning-red {
+  animation: spinToRed 3.2s cubic-bezier(0.12, 0.8, 0.25, 1) forwards;
+}
+
+.coin-spinning-yellow {
+  animation: spinToYellow 3.2s cubic-bezier(0.12, 0.8, 0.25, 1) forwards;
+}
+
+@keyframes spinToRed {
+  0% { transform: translateY(0) rotateY(0deg) scale(1); }
+  30% { transform: translateY(-160px) rotateY(1080deg) scale(1.3); }
+  70% { transform: translateY(-40px) rotateY(2160deg) scale(1.1); }
+  100% { transform: translateY(0) rotateY(2880deg) scale(1); } /* Land on Red (0/360) */
+}
+
+@keyframes spinToYellow {
+  0% { transform: translateY(0) rotateY(0deg) scale(1); }
+  30% { transform: translateY(-160px) rotateY(1080deg) scale(1.3); }
+  70% { transform: translateY(-40px) rotateY(2160deg) scale(1.1); }
+  100% { transform: translateY(0) rotateY(3060deg) scale(1); } /* Land on Yellow (180) */
+}
+
+/* Badge Celebrations */
+@keyframes rubberBand {
+  from { transform: scale3d(1, 1, 1); }
+  30% { transform: scale3d(1.25, 0.75, 1); }
+  40% { transform: scale3d(0.75, 1.25, 1); }
+  50% { transform: scale3d(1.15, 0.85, 1); }
+  65% { transform: scale3d(0.95, 1.05, 1); }
+  75% { transform: scale3d(1.05, 0.95, 1); }
+  to { transform: scale3d(1, 1, 1); }
+}
+
+@keyframes headShake {
+  0% { transform: translateX(0) rotateY(0); }
+  6.5% { transform: translateX(-6px) rotateY(-9deg); }
+  18.5% { transform: translateX(5px) rotateY(7deg); }
+  31.5% { transform: translateX(-3px) rotateY(-5deg); }
+  43.5% { transform: translateX(2px) rotateY(3deg); }
+  50% { transform: translateX(0) rotateY(0); }
+}
