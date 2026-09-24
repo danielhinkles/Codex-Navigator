@@ -262,7 +262,7 @@ Select a project, open the new-session menu and choose **New task in Navigator**
 
 To continue an existing task, select **Continue in Navigator** in the inspector or row menu. Composer opens recent conversation and the real working folder. Simply opening it can connect or recover task state, but does not submit a new model prompt.
 
-The alternative **Open new task in Codex** opens Codex's desktop composer. Double-clicking a session, pressing Return on its row or choosing **Open in Codex** opens that existing task in Codex.
+The alternative **Open new task in Codex** opens Codex's desktop composer. Double-clicking a session or pressing Return on its row opens it in Navigator’s Composer. Choose **Open in Codex** to open that existing task in the Codex desktop app.
 
 ### Send a prompt
 
@@ -385,7 +385,7 @@ Theme, view mode, text scale, density, panel dimensions, optional columns, previ
 | Find sessions | Command-F. |
 | Select next/previous session | Down/Up with the session table focused. |
 | Select first/last session | Home/End with the session table focused. |
-| Open selected session in Codex | Return, or double-click its row. |
+| Continue selected session in Navigator | Return, or double-click its row. |
 | Preview selected session | Space with the table focused, or Quick Look in its context menu. |
 | Expand prompts | Click the row chevron. |
 | Preview selected asset | Space with its gallery focused, or double-click the asset. |
