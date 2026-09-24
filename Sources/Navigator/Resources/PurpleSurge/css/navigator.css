@@ -29,16 +29,12 @@ body[data-turn="2"] { --coin-image:url('../img/token-yellow.webp'); }
 .player-avatar .avatar-sym { font-size:0; width:26px; height:26px; background:url('../img/token-red.webp') center/contain no-repeat; }
 .yellow-avatar .avatar-sym { background-image:url('../img/token-yellow.webp'); }
 #screen-game .turn-status-bar.is-p2:not(.is-armed) { --tc-a:#ffc107; --tc-b:#b87500; --tc-glow:rgba(255,193,7,.5); --tc-ring:rgba(255,193,7,.35); }
-#screen-game .board-wrapper { max-width:calc(100vh - 330px); align-self:center; }
-#screen-game #columns { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); width:76.72%; max-width:calc((100vh - 330px) * .7672); margin:0 auto; }
 #screen-game .score-value::before { content:'SURGE '; }
 #screen-game .power-cell-head { flex-direction:column; align-items:flex-start; gap:0; }
 #screen-game .power-cell .surge-text { font-size:12px; white-space:normal; }
 #screen-game .power-cell { padding:8px; gap:8px; }
 #screen-game .power-cell-token { width:46px; height:46px; }
 #screen-game .power-cell-arm { padding:10px 8px; font-size:12px; }
-#screen-game .board-wrapper { max-width:calc(100vh - 215px); }
-#screen-game #columns { max-width:calc((100vh - 215px) * .7672); }
 @media (max-height:450px) {
  #screen-game.screen { gap:4px; padding-top:4px; }
  #screen-game .player-card { min-height:36px; padding:4px; gap:6px; }
@@ -54,3 +50,8 @@ body[data-turn="2"] { --coin-image:url('../img/token-yellow.webp'); }
 }
 #screen-game .move-nav-bar { display:flex; min-height:36px; padding:3px; }
 #screen-game .move-nav-btn { min-height:28px; height:28px; }
+/* Size from the drawer width, never the web viewport height. */
+#screen-game.screen { height:auto; max-height:none; }
+#screen-game.screen > * { flex-shrink:0; }
+#screen-game .board-wrapper { width:100%; height:auto; max-height:none; max-width:100%; aspect-ratio:1355 / 1161; align-self:center; }
+#screen-game #columns { width:76.72%; max-width:none; margin-left:10.166%; margin-right:13.114%; }

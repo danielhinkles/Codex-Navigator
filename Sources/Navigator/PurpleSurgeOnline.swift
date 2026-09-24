@@ -1,12 +1,44 @@
 import SwiftUI
 import WebKit
 
+/// Fixed entry points share one website profile, including account and progress storage.
+enum SurgeDestination: String, CaseIterable, Identifiable {
+    case puzzles, tower, speedRun, progress, arena, offline
+    var id: String { rawValue }
+    var title: String {
+        switch self {
+        case .puzzles: return "Puzzles"
+        case .tower: return "Tower"
+        case .speedRun: return "Speed Run"
+        case .progress: return "My profile"
+        case .arena: return "Online arena"
+        case .offline: return "Offline puzzle"
+        }
+    }
+    var url: URL? {
+        switch self {
+        case .puzzles: return URL(string: "https://purplesurge.co.uk/purple-surge/?screen=puzzle")!
+        case .tower: return URL(string: "https://purplesurge.co.uk/purple-surge/?screen=tower")!
+        case .speedRun: return URL(string: "https://purplesurge.co.uk/purple-surge/?screen=speedrun")!
+        case .progress: return URL(string: "https://purplesurge.co.uk/purple-surge/?screen=me")!
+        case .arena: return PurpleSurgeOnline.arena
+        case .offline: return nil
+        }
+    }
+    func initialURL(savedMatch: URL?) -> URL? {
+        if self == .arena, let savedMatch, PurpleSurgeOnline.allowed(savedMatch),
+           PurpleSurgeOnline.Coordinator.isMatch(savedMatch) { return savedMatch }
+        return url
+    }
+}
+
 /// A separate persistent website profile. No Codex cookies, message handlers,
 /// file URLs, native objects or task data are supplied to the remote game.
 struct PurpleSurgeOnline: NSViewRepresentable {
     @Binding var failure: String?
     @Binding var loading: Bool
     let reload: Int
+    var destination: SurgeDestination = .arena
     static let arena = URL(string: "https://purplesurge.co.uk/online")!
     static let profile = UUID(uuidString: "EA7F4598-D56D-4D8F-A846-940506CD1CEC")!
     static func allowed(_ url: URL) -> Bool {
@@ -22,17 +54,18 @@ struct PurpleSurgeOnline: NSViewRepresentable {
         let view = WKWebView(frame: .zero, configuration: config)
         view.navigationDelegate = context.coordinator; view.uiDelegate = context.coordinator
         view.allowsBackForwardNavigationGestures = true
-        view.setAccessibilityLabel("Purple Surge online arena")
+        view.setAccessibilityLabel("Purple Surge · " + destination.title)
+        context.coordinator.reload = reload
         // Never read or persist OAuth callback URLs. Only a game's own resumable
         // match route can replace the arena's initial address.
         let saved = NavigatorApp.preferences.string(forKey: "navigator.surge.onlineMatch").flatMap(URL.init(string:))
-        view.load(URLRequest(url: saved.flatMap { Coordinator.isMatch($0) ? $0 : nil } ?? Self.arena))
+        view.load(URLRequest(url: destination.initialURL(savedMatch: saved) ?? Self.arena))
         return view
     }
     func updateNSView(_ view: WKWebView, context: Context) {
         context.coordinator.failure = $failure
         context.coordinator.loading = $loading
-        if context.coordinator.reload != reload { context.coordinator.reload = reload; view.load(URLRequest(url: view.url.flatMap { Self.allowed($0) ? $0 : nil } ?? Self.arena)) }
+        if context.coordinator.reload != reload { context.coordinator.reload = reload; view.load(URLRequest(url: view.url.flatMap { Self.allowed($0) ? $0 : nil } ?? destination.url ?? Self.arena)) }
     }
     static func dismantleNSView(_ view: WKWebView, coordinator: Coordinator) {
         view.setAllMediaPlaybackSuspended(true)
@@ -62,7 +95,7 @@ struct PurpleSurgeOnline: NSViewRepresentable {
             }
             guard PurpleSurgeOnline.allowed(url) else {
                 decisionHandler(.cancel)
-                DispatchQueue.main.async { self.loading.wrappedValue = false; self.failure.wrappedValue = "This link cannot open inside the game panel. Return to the arena to keep playing." }
+                DispatchQueue.main.async { self.loading.wrappedValue = false; self.failure.wrappedValue = "This link cannot open inside the game panel. Choose a game mode to keep playing." }
                 return
             }
             decisionHandler(.allow)
@@ -82,11 +115,11 @@ struct PurpleSurgeOnline: NSViewRepresentable {
         }
         func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) { report(error) }
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) { report(error) }
-        func webViewWebContentProcessDidTerminate(_ webView: WKWebView) { loading.wrappedValue = false; failure.wrappedValue = "The arena stopped responding. Reload to reconnect; your offline puzzle is saved." }
+        func webViewWebContentProcessDidTerminate(_ webView: WKWebView) { loading.wrappedValue = false; failure.wrappedValue = "Purple Surge stopped responding. Reload to reconnect; your offline puzzle is saved." }
         private func report(_ error: Error) {
             guard (error as NSError).code != NSURLErrorCancelled else { return }
             loading.wrappedValue = false
-            failure.wrappedValue = "The arena could not connect. Retry, or play your saved offline puzzle." 
+            failure.wrappedValue = "Purple Surge could not connect. Retry, or play your saved offline puzzle." 
         }
         func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for action: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
             if let url = action.request.url, PurpleSurgeOnline.allowed(url) { webView.load(action.request) }

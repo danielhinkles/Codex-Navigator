@@ -147,7 +147,7 @@ Launch integration references: [Godot command line](https://docs.godotengine.org
 
 ### Purple Surge
 
-The right-edge Purple Surge tab opens a compact game drawer in Navigator and Composer. Play 200 bundled offline puzzles, or choose **Play online** to enter Purple Surge’s existing arena inside the panel. Puzzle moves save locally, task attention stays visible, and invitations can be disabled. Online match clocks continue while hidden. See [integration notes and verification limits](docs/PURPLE-SURGE-IMPLEMENTATION.md).
+The right-edge Purple Surge tab opens the full game's **Puzzles**, **Tower**, **Speed Run**, **My profile**, and **Online arena** inside Navigator and Composer. These destinations share a persistent game profile; sign in within the game to access account progress. **Offline puzzle** retains the separate bundled 200-puzzle pack and your existing Mac-local save. Website progress and offline progress remain separate. Timed games continue while hidden. Task attention stays visible, and invitations can be disabled. See [integration notes and verification limits](docs/PURPLE-SURGE-IMPLEMENTATION.md).
 
 ### Composer, approvals, and attention
 

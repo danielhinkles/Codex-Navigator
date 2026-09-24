@@ -49,6 +49,27 @@ class ComposerTests(unittest.TestCase):
         self.settle()
     def approval(self, method='item/commandExecution/requestApproval', **params):
         self.c.event({'id':7,'method':method,'params':dict(threadId='task',turnId='turn',command='test command',**params)})
+    def test_model_catalogue_preserves_exact_choices_and_resolves_config(self):
+        def request(method, params):
+            if method == 'model/list':
+                return {'data':[{'model':'test-model','displayName':'Test', 'isDefault':True,
+                    'defaultReasoningEffort':'medium', 'supportedReasoningEfforts':[
+                        {'reasoningEffort':'low'}, {'reasoningEffort':'medium'}]}]}
+            if method == 'config/read': return {'config':{'model':'test-model','model_reasoning_effort':'low'}}
+            return {}
+        self.rpc.request=request
+        result=self.c.capabilities('/tmp')
+        self.assertEqual(result['effectiveModel'],'test-model')
+        self.assertEqual(result['effectiveEffort'],'low')
+        self.assertEqual(result['models'][0]['efforts'],['low','medium'])
+        self.c.state.update(result)
+        self.assertEqual(self.c.turn_options({'model':'test-model','effort':'medium'})['effort'],'medium')
+        with self.assertRaises(ValueError): self.c.turn_options({'model':'test-model','effort':'ultra'})
+        self.rpc.request=lambda *args: (_ for _ in ()).throw(RuntimeError('offline'))
+        failed=self.c.capabilities('/tmp')
+        self.assertEqual(failed['models'],result['models'])
+        self.assertIn('Model choices unavailable',failed['capabilityError'])
+
     def test_work_timer_preserves_start_across_updates_and_reconnect(self):
         with patch('composer.time.time', return_value=100):
             self.c.change(status='starting', turnId='')

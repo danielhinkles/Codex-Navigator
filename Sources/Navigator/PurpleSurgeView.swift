@@ -12,6 +12,7 @@ struct PurpleSurgeDock: View {
     @StoredState private var onlineFailure: String?
     @StoredState private var reload = 0
     @StoredState private var onlineLoading = true
+    @StoredState private var puzzleHeight: CGFloat = 620
     var body: some View {
         HStack(spacing: 0) {
             if game.open {
@@ -62,12 +63,23 @@ struct PurpleSurgeDock: View {
             if game.introduction {
                 introduction(compact: compact)
             } else {
-                Picker("Play mode", selection: $game.online) {
-                    Text("Puzzles").tag(false)
-                    Text("Online arena").tag(true)
-                }.pickerStyle(.segmented).labelsHidden().padding(.horizontal, compact ? 12 : 18).padding(.vertical, compact ? 8 : 12)
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 3), spacing: 6) {
+                    ForEach(SurgeDestination.allCases) { destination in
+                        Button {
+                            onlineFailure = nil
+                            onlineLoading = true
+                            if game.destination == destination { reload += 1 }
+                            else { game.destination = destination }
+                        } label: {
+                            Text(destination.title).font(.system(size: 11, weight: .semibold))
+                                .frame(maxWidth: .infinity).padding(.vertical, 9)
+                                .background(game.destination == destination ? surgeViolet.opacity(0.4) : .white.opacity(0.06), in: RoundedRectangle(cornerRadius: 7))
+                        }.buttonStyle(.plain)
+                            .accessibilityAddTraits(game.destination == destination ? .isSelected : [])
+                    }
+                }.padding(.horizontal, compact ? 12 : 18).padding(.vertical, 8)
             }
-            if game.online && !game.introduction {
+            if game.destination != .offline && !game.introduction {
                 onlineContent
             } else {
                 ScrollView {
@@ -80,18 +92,6 @@ struct PurpleSurgeDock: View {
                         }
                     }.padding(compact ? 12 : 18)
                 }
-            }
-            if !game.online && !game.introduction {
-                Button { game.online = true } label: {
-                    HStack {
-                        Image(systemName: "person.2.fill")
-                        Text("Play online").fontWeight(.semibold)
-                        Spacer()
-                        Image(systemName: "arrow.right")
-                    }.font(.system(size: 13)).foregroundStyle(.white).padding(13)
-                        .background(LinearGradient(colors: [surgeViolet, Color(red: 0.46, green: 0.25, blue: 0.81)], startPoint: .leading, endPoint: .trailing), in: RoundedRectangle(cornerRadius: 11))
-                }.buttonStyle(.plain)
-                    .padding(.horizontal, compact ? 12 : 18).padding(.vertical, compact ? 6 : 10)
             }
             Divider().overlay(.white.opacity(0.08))
             Toggle("Show occasional invitations", isOn: Binding(get: { game.archive.invitations }, set: { game.setInvitations($0) }))
@@ -147,20 +147,21 @@ struct PurpleSurgeDock: View {
     private var onlineContent: some View {
         VStack(spacing: 0) {
             HStack {
-                Text("Online clocks keep running when hidden.").font(.system(size: 10)).foregroundStyle(.secondary)
+                Text("Timed games keep running when hidden.").font(.system(size: 10)).foregroundStyle(.secondary)
                 Spacer(minLength: 0)
-                Button { reload += 1 } label: { Image(systemName: "arrow.clockwise") }.buttonStyle(.plain).help("Reload online arena")
+                Button { reload += 1 } label: { Image(systemName: "arrow.clockwise") }.buttonStyle(.plain).help("Reload game")
             }.padding(.horizontal, 18).padding(.bottom, 10)
             if let failure = onlineFailure {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(failure).font(.callout)
-                    HStack { Button("Retry") { reload += 1 }; Button("Offline puzzle") { game.online = false } }
+                    HStack { Button("Retry") { reload += 1 }; Button("Offline puzzle") { game.destination = .offline } }
                 }.padding(14).frame(maxWidth: .infinity).background(surgeViolet.opacity(0.12))
             }
-            PurpleSurgeOnline(failure: $onlineFailure, loading: $onlineLoading, reload: reload)
+            PurpleSurgeOnline(failure: $onlineFailure, loading: $onlineLoading, reload: reload, destination: game.destination)
+                .id(game.destination)
                 .overlay {
                     if onlineLoading && onlineFailure == nil {
-                        VStack(spacing: 12) { ProgressView(); Text("Connecting to the arena…").font(.callout).foregroundStyle(.secondary) }
+                        VStack(spacing: 12) { ProgressView(); Text("Loading Purple Surge…").font(.callout).foregroundStyle(.secondary) }
                             .frame(maxWidth: .infinity, maxHeight: .infinity).background(surgeInk)
                     }
                 }
@@ -168,8 +169,8 @@ struct PurpleSurgeDock: View {
     }
     private func puzzleContent(_ puzzle: SurgePuzzle, _ position: SurgePosition, compact: Bool) -> some View {
         VStack(alignment: .leading, spacing: compact ? 10 : 16) {
-            PurpleSurgeBoard(game: game, reduced: reduceMotion)
-                .frame(height: compact ? 425 : 520)
+            PurpleSurgeBoard(game: game, reduced: reduceMotion, contentHeight: $puzzleHeight)
+                .frame(height: puzzleHeight)
             HStack {
                 Label(game.error == nil ? "Saved on this Mac" : "Save needs attention", systemImage: game.error == nil ? "checkmark.shield" : "exclamationmark.circle").foregroundStyle(.secondary)
                 Spacer()

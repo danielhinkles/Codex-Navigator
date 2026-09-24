@@ -17,7 +17,7 @@ final class PurpleSurgeStore: ObservableObject {
     @Published private(set) var open = false
     @Published private(set) var introduction = false
     @Published private(set) var peeking = false
-    @Published var online = false
+    @Published var destination: SurgeDestination = CommandLine.arguments.contains("--demo") ? .offline : .puzzles
     @Published var armed = false
     @Published var boardAnimating = false
     @Published var showHint = false

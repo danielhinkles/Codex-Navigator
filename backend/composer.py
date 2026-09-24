@@ -58,7 +58,7 @@ class Composer:
     @staticmethod
     def empty():
         return dict(type='composer', threadId='', turnId='', title='New task', cwd='', project='',
-                    status='idle', active=False, error='', messages=[], approvals=[], revision=0, models=[], skills=[], plugins=[], capabilityError='',
+                    status='idle', active=False, error='', messages=[], approvals=[], revision=0, models=[], skills=[], plugins=[], capabilityError='', effectiveModel='', effectiveEffort='',
                     metadataLoading=False, tokenUsage=None, fiveHourUsage=None, observing=False, workStartedAt=None, voiceStatus="idle", voiceError="", voiceID="")
 
     def change(self, **values):
@@ -234,10 +234,21 @@ class Composer:
             while True:
                 page = self.rpc.request('model/list', dict(limit=100, includeHidden=False, cursor=cursor))
                 result['models'].extend(dict(model=m['model'], name=m.get('displayName') or m['model'],
+                    defaultEffort=m.get('defaultReasoningEffort'), isDefault=m.get('isDefault', False),
                     efforts=[e['reasoningEffort'] for e in m.get('supportedReasoningEfforts', [])]) for m in page.get('data', []))
                 cursor = page.get('nextCursor')
                 if not cursor: break
-        except Exception: errors.append('Model choices unavailable')
+        except Exception as exc:
+            result['models'] = self.state.get('models', [])
+            errors.append('Model choices unavailable: '+str(exc))
+        try:
+            config = self.rpc.request('config/read', dict(includeLayers=False, cwd=cwd or None)).get('config', {})
+        except Exception:
+            config = {}
+        default = next((m for m in result['models'] if m.get('isDefault')), None)
+        result['effectiveModel'] = self.state.get('effectiveModel') or config.get('model') or (default or {}).get('model', '')
+        entry = next((m for m in result['models'] if m['model'] == result['effectiveModel']), None)
+        result['effectiveEffort'] = self.state.get('effectiveEffort') or config.get('model_reasoning_effort') or (entry or {}).get('defaultEffort') or ''
         try:
             page = self.rpc.request('skills/list', dict(cwds=[cwd] if cwd else [], forceReload=True))
             result['skills'] = [dict(name=s['name'], path=s['path'], description=s.get('description',''), enabled=s.get('enabled',False))
@@ -299,7 +310,7 @@ class Composer:
                 result = self.rpc.request('thread/read', {'threadId':tid, 'includeTurns':False})
                 self.observing = True
             page = self.rpc.request('thread/turns/list', {'threadId':tid,'limit':10,'sortDirection':'desc','itemsView':'full'})
-            return result['thread'], list(reversed(page.get('data', [])))
+            return result['thread'], list(reversed(page.get('data', []))), result.get('model'), result.get('reasoningEffort')
         self.submit('resume', resume)
 
     def interrupt(self):
@@ -504,7 +515,8 @@ class Composer:
                     self.reconnect_attempts = 0
                     self.change(status='idle')
                     if result:
-                        thread, turns = result
+                        thread, turns, runtime_model, runtime_effort = result
+                        self.change(effectiveModel=runtime_model or self.state.get('effectiveModel', ''), effectiveEffort=runtime_effort or self.state.get('effectiveEffort', ''))
                         self.on_thread(thread)
                         unsent=[m for m in self.state['messages'] if m['id'].startswith('local-user-')]
                         self.change(threadId=thread['id'], cwd=thread.get('cwd') or self.state['cwd'],messages=[])
@@ -525,7 +537,7 @@ class Composer:
                     self.next_observe = time.monotonic()+3
                     if self.observing:
                         self.change(error='This task is owned by another Codex window. Navigator is following its saved progress.')
-                    else: self.refresh_capabilities()
+                    self.refresh_capabilities()
                 elif kind == 'send':
                     turn = result['turn']
                     if turn['id'] not in self.finished:

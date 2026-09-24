@@ -5,7 +5,8 @@ import WebKit
 struct PurpleSurgeBoard: NSViewRepresentable {
     @ObservedObject var game: PurpleSurgeStore
     let reduced: Bool
-    func makeCoordinator() -> Coordinator { Coordinator(game) }
+    @Binding var contentHeight: CGFloat
+    func makeCoordinator() -> Coordinator { Coordinator(game, height: $contentHeight) }
     func makeNSView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .nonPersistent()
@@ -34,11 +35,16 @@ struct PurpleSurgeBoard: NSViewRepresentable {
         weak var view: WKWebView?
         var ready = false, reduced = false
         var lastPayload: Data?
-        init(_ game: PurpleSurgeStore) { self.game = game }
+        var height: Binding<CGFloat>?
+        init(_ game: PurpleSurgeStore, height: Binding<CGFloat>? = nil) { self.game = game; self.height = height }
         var key: String { "\(game.archive.puzzleID):" + game.archive.moves.map { "\($0.kind)\($0.col)" }.joined(separator: ",") }
         func userContentController(_ controller: WKUserContentController, didReceive message: WKScriptMessage) {
             guard message.frameInfo.isMainFrame, message.frameInfo.securityOrigin.protocol == "surge-board",
                   message.frameInfo.securityOrigin.host == "bundle", let body = message.body as? [String: Any], let type = body["type"] as? String else { return }
+            if type == "layout", let value = body["height"] as? Double, value.isFinite, (100...3000).contains(value) {
+                if height?.wrappedValue != CGFloat(value) { height?.wrappedValue = CGFloat(value) }
+                return
+            }
             if type == "ready" { ready = true; present(); return }
             guard body["key"] as? String == key else {
                 // A move against a stale key gets the current board back so the page's busy latch clears.

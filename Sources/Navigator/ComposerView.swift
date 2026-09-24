@@ -34,7 +34,7 @@ struct ComposerOption:Decodable {let label,description:String}
 struct ComposerQuestion:Decodable,Identifiable {let id,header,question:String;var isSecret:Bool?;var options:[ComposerOption]?}
 struct ComposerApprovalChoice:Decodable,Identifiable {let id,label:String}
 struct ComposerApproval:Decodable,Identifiable {let id,title,detail:String;let questions:[ComposerQuestion];let canAccept:Bool;var choices:[ComposerApprovalChoice]?}
-struct ComposerModel:Decodable,Identifiable {let model,name:String;let efforts:[String];var id:String {model}}
+struct ComposerModel:Decodable,Identifiable {let model,name:String;let efforts:[String];var defaultEffort:String?;var isDefault:Bool?;var id:String {model}}
 struct ComposerSkill:Decodable,Identifiable {let name,path,description:String;let enabled:Bool;var id:String {path}}
 struct ComposerPlugin:Decodable {let name:String;let enabled:Bool}
 struct ComposerTokens:Decodable {let total,last:ComposerTokenCount;let modelContextWindow:Int?}
@@ -57,6 +57,8 @@ struct ComposerState:Decodable {
     var active=false
     var messages:[ComposerMessage]=[]
     var approvals:[ComposerApproval]=[]
+    var effectiveModel:String?
+    var effectiveEffort:String?
     var models:[ComposerModel]?
     var skills:[ComposerSkill]?
     var plugins:[ComposerPlugin]?
@@ -111,6 +113,19 @@ final class ComposerStore:ObservableObject {
             }
             restoreEditor()
         } else { state=value }
+        resolveModelSelection()
+    }
+    func resolveModelSelection() {
+        let models=state.models ?? []
+        guard !models.isEmpty else {return}
+        if selectedModel.isEmpty {
+            selectedModel=models.first(where:{$0.model == state.effectiveModel})?.model ?? models.first(where:{$0.isDefault == true})?.model ?? models[0].model
+        }
+        guard let entry=models.first(where:{$0.model == selectedModel}) else {return}
+        if !entry.efforts.contains(selectedEffort) {
+            let effective=selectedModel == state.effectiveModel ? state.effectiveEffort : nil
+            selectedEffort=effective.flatMap{entry.efforts.contains($0) ? $0 : nil} ?? entry.defaultEffort ?? entry.efforts.first ?? ""
+        }
     }
     func captureSubmission() -> ComposerSubmission {
         ComposerSubmission(taskKey:currentKey,text:submissionText,draft:draft,model:selectedModel,effort:selectedEffort,skills:selectedSkills.sorted(),selectedPrompt:selectedPrompt,promptInstructions:promptInstructions,preparedFeedback:preparedFeedback,attachments:attachments)
@@ -303,6 +318,7 @@ struct ComposerView:View {
         }
         .background(Color(nsColor:.windowBackgroundColor))
         .onAppear {surge.allowComposerSheet=true;DispatchQueue.main.async {inputFocused=true};registerProbe();model.send(["action":"composerRefresh"])}
+        .onChange(of:state.taskKey) {_,_ in model.send(["action":"composerRefresh"])}
         .onDisappear {surge.allowComposerSheet=false;model.composerAudio.stop()}
         .onChange(of:state.revision) {_,_ in registerProbe()}
         .sheet(item:$promptEditor) {prompt in
@@ -516,17 +532,18 @@ struct ComposerView:View {
         VStack(alignment:.leading,spacing:8) {
             HStack {
                 Picker("Model",selection:$store.selectedModel) {
-                    Text("Use task / Codex default").tag("")
-                    ForEach(state.models ?? []) {entry in Text(entry.name).tag(entry.model)}
+                    if (state.models ?? []).isEmpty {Text(state.metadataLoading == true ? "Loading models…" : "Models unavailable").tag("")}
+                    if !store.selectedModel.isEmpty && !(state.models ?? []).contains(where:{$0.model == store.selectedModel}) {Text(store.selectedModel).tag(store.selectedModel)}
+                    ForEach(state.models ?? []) {entry in Text(entry.model).tag(entry.model)}
                 }.frame(maxWidth:330)
                 Picker("Effort",selection:$store.selectedEffort) {
-                    Text("Default").tag("")
+                    if store.selectedEffort.isEmpty {Text("Effort unavailable").tag("")}
                     ForEach((state.models ?? []).first(where:{$0.model == store.selectedModel})?.efforts ?? [],id:\.self) {effort in Text(effort.capitalized).tag(effort)}
                 }.frame(maxWidth:220).disabled(store.selectedModel.isEmpty)
                 Spacer()
                 Button {model.send(["action":"composerRefresh"])} label: {Image(systemName:"arrow.clockwise")}.help("Refresh models, skills, plugins and account usage")
             }.disabled(state.active || store.submitting || state.metadataLoading == true)
-                .onChange(of:store.selectedModel) {_,_ in store.selectedEffort=""}
+                .onChange(of:store.selectedModel) {_,_ in store.resolveModelSelection()}
             HStack(spacing:18) {
                 Text(state.tokenUsage.map{"Tokens: " + $0.total.totalTokens.formatted()} ?? "Tokens: unavailable")
                 Text(contextUsage)

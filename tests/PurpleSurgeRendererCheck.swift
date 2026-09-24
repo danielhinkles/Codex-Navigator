@@ -23,6 +23,12 @@ struct ComposerLocalState { static func defaultDirectory() -> URL { URL(fileURLW
     try await Task.sleep(for:.seconds(3))
     let count=try await web.evaluateJavaScript("document.querySelectorAll('.board-cell').length")
     precondition((count as? Int)==42,"Board must render 42 cells")
+    for height in [425.0, 520.0, 700.0] {
+        web.setFrameSize(NSSize(width:324,height:height))
+        try await Task.sleep(for:.milliseconds(100))
+        let ratio=try await web.evaluateJavaScript("(() => {const r=document.querySelector('.board-wrapper').getBoundingClientRect();return r.width/r.height})()")
+        precondition(abs((ratio as? Double ?? 0) - 1355.0/1161.0)<0.01,"Puzzle board must preserve its aspect ratio at every drawer height")
+    }
     let turn=try await web.evaluateJavaScript("document.body.dataset.turn")
     precondition(turn as? String == "1", "Red lighting on player turn")
     _ = try await web.evaluateJavaScript("document.getElementById('btn-use-purple').click()")

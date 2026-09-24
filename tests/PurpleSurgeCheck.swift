@@ -57,6 +57,20 @@ enum ComposerLocalState { static func defaultDirectory() -> URL { fatalError("Te
         for url in ["file:///etc/passwd", "http://purplesurge.co.uk/online", "https://purplesurge.co.uk.evil.example/", "https://evil.example/", "https://user:password@purplesurge.co.uk/", "https://purplesurge.co.uk:8080/"] {
             precondition(!PurpleSurgeOnline.allowed(URL(string:url)!))
         }
+        // Each menu destination opens its own hub; an arena resume must not hijack it.
+        let match = URL(string: "https://purplesurge.co.uk/purple-surge/?online=1&matchId=test")!
+        for (destination, screen) in [(SurgeDestination.puzzles, "puzzle"), (.tower, "tower"), (.speedRun, "speedrun"), (.progress, "me")] {
+            let url = destination.initialURL(savedMatch: match)!
+            precondition(PurpleSurgeOnline.allowed(url))
+            precondition(URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems == [URLQueryItem(name: "screen", value: screen)])
+        }
+        precondition(SurgeDestination.arena.initialURL(savedMatch: match) == match)
+        precondition(SurgeDestination.arena.initialURL(savedMatch: URL(string: "https://evil.example/")) == PurpleSurgeOnline.arena)
+        precondition(SurgeDestination.offline.initialURL(savedMatch: match) == nil)
+        let before = try Data(contentsOf: persistence.url)
+        for destination in SurgeDestination.allCases { restarted.destination = destination }
+        let after = try Data(contentsOf: persistence.url)
+        precondition(after == before)
         precondition(PurpleSurgeOnline.Coordinator.isMatch(URL(string:"https://purplesurge.co.uk/purple-surge/?online=1&matchId=test")!))
         precondition(!PurpleSurgeOnline.Coordinator.isMatch(URL(string:"https://purplesurge.co.uk/api/auth/callback?code=secret")!))
         let now = Date()

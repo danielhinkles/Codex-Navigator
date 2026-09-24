@@ -92,3 +92,7 @@ for(const id of ['hint','rules'])document.getElementById(id).onclick=()=>{
  const help=document.getElementById('help');const text=id==='hint'?state.puzzle.hint:'Connect four red tokens horizontally, vertically or diagonally. Purple Surge clears its landing row, then the tokens above fall. Win within the puzzle move limit.';
  help.hidden=!help.hidden&&help.textContent===text;help.textContent=text;
 };
+
+// Let the native scroll view contain the entire puzzle, including its controls.
+new ResizeObserver(() => send({type:'layout', height:Math.ceil(document.getElementById('screen-game').getBoundingClientRect().height)}))
+  .observe(document.getElementById('screen-game'));
