@@ -485,7 +485,7 @@ UI/worker messages are one JSON object per newline. Keep stdout exclusively for 
 
 ### Codex RPC transport
 
-Executable discovery order: explicit constructor binary, `NAVIGATOR_CODEX`, PATH `codex`, then known application bundle resources. `CODEX_HOME` is supplied to the subprocess. Handshake uses `initialize` with experimentalApi followed by `initialized`.
+Executable discovery order: explicit constructor binary, `NAVIGATOR_CODEX`, PATH `codex`, then known application bundle resources. Finder launches support both the current `codex-cli/bin/codex` entrypoint (with nested `CodexCLI.app` fallback) and the legacy flat `Resources/codex` layout in ChatGPT and Codex app bundles. `CODEX_HOME` is supplied to the subprocess. Handshake uses `initialize` with experimentalApi followed by `initialized`.
 
 Requests use a monotonic serial, per-request queue, write lock and default 20-second timeout. EOF fails current pending requests. Readers ignore old processes and interactive events carry process identity. Browsing notifications are bounded to 100 wake-up events; interactive events are not bounded at transport ingress, so the bounded Composer viewport is not a guarantee of a globally bounded event queue.
 

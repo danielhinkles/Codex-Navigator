@@ -18,8 +18,17 @@ class CodexRPC:
         self.write_lock = threading.Lock()
         self.binary = binary or os.environ.get('NAVIGATOR_CODEX') or shutil.which('codex')
         if not self.binary:
-            for candidate in ['/Applications/ChatGPT.app/Contents/Resources/codex',
-                              '/Applications/Codex.app/Contents/Resources/codex']:
+            # Finder launches do not inherit the CLI's PATH. Desktop releases
+            # now package it inside codex-cli; prefer the supplied entrypoint
+            # while retaining compatibility with the earlier flat layout.
+            for candidate in [
+                '/Applications/ChatGPT.app/Contents/Resources/codex-cli/bin/codex',
+                '/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex',
+                '/Applications/ChatGPT.app/Contents/Resources/codex',
+                '/Applications/Codex.app/Contents/Resources/codex-cli/bin/codex',
+                '/Applications/Codex.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex',
+                '/Applications/Codex.app/Contents/Resources/codex',
+            ]:
                 if os.path.isfile(candidate):
                     self.binary = candidate
                     break

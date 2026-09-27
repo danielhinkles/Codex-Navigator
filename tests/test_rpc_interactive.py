@@ -4,8 +4,37 @@ from pathlib import Path
 import queue
 import sys
 import unittest
+from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'backend'))
 from rpc import CodexRPC
+
+class ExecutableDiscoveryTests(unittest.TestCase):
+    def discover(self, installed=(), path_binary=None, override=None, binary=None):
+        with patch.dict('os.environ', {'NAVIGATOR_CODEX':override} if override else {}, clear=True), \
+             patch('rpc.shutil.which', return_value=path_binary), \
+             patch('rpc.os.path.isfile', side_effect=lambda path:path in installed):
+            return CodexRPC('/tmp', binary=binary).binary
+
+    def test_finder_launch_discovers_current_and_legacy_bundle_layouts(self):
+        for app in ('ChatGPT', 'Codex'):
+            for relative in ('codex-cli/bin/codex', 'codex-cli/CodexCLI.app/Contents/MacOS/codex', 'codex'):
+                candidate=f'/Applications/{app}.app/Contents/Resources/{relative}'
+                with self.subTest(candidate=candidate):
+                    self.assertEqual(self.discover(installed={candidate}),candidate)
+
+    def test_packaged_entrypoint_precedes_raw_and_legacy_binaries(self):
+        root='/Applications/ChatGPT.app/Contents/Resources/'
+        wrapper=root+'codex-cli/bin/codex'
+        self.assertEqual(self.discover(installed={wrapper,root+'codex-cli/CodexCLI.app/Contents/MacOS/codex',root+'codex'}),wrapper)
+
+    def test_explicit_override_and_path_keep_precedence(self):
+        installed={'/Applications/ChatGPT.app/Contents/Resources/codex-cli/bin/codex'}
+        self.assertEqual(self.discover(installed,path_binary='/path/codex'),'/path/codex')
+        self.assertEqual(self.discover(installed,path_binary='/path/codex',override='/override/codex'),'/override/codex')
+        self.assertEqual(self.discover(installed,path_binary='/path/codex',override='/override/codex',binary='/explicit/codex'),'/explicit/codex')
+
+    def test_missing_installation_stays_unavailable(self):
+        self.assertIsNone(self.discover())
 
 class FakeProcess:
     def __init__(self, message):
